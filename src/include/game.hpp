@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+using namespace std;
 class game
 {
 private:
@@ -13,12 +14,15 @@ private:
     SDL_Window *window;
     SDL_Renderer *rendere;
 
+    SDL_Texture *bB;
+
     SDL_Event windowEvent;
 
     int SQ_size;
 
     void drawEverything();
     void drawBoard();
+    void drawPieces();
 public:
     game();
     ~game();

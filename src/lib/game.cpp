@@ -8,8 +8,14 @@ game::game(){
     window = SDL_CreateWindow("chessGame",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,SDL_WINDOW_ALLOW_HIGHDPI);
     rendere = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     SQ_size = BOARD_HEIGHT/BOARD_DIMENTION;
+
+    bB = IMG_LoadTexture(rendere,"../src/images/wK.png");
+    if(!bB){
+        cout << SDL_GetError() << endl;
+    }
 }
 game::~game(){
+
     SDL_DestroyRenderer(rendere);
     SDL_DestroyWindow(window);
 }
@@ -27,7 +33,7 @@ void game::startGame(){
         if(SDL_PollEvent(&windowEvent)){
             if(SDL_QUIT==windowEvent.type){break;}
         }
-        drawBoard();
+        drawEverything();
     }
 
     SDL_DestroyWindow(window);
@@ -36,12 +42,13 @@ void game::startGame(){
 
 
 void game::drawEverything(){
+    SDL_RenderClear(rendere);
     drawBoard();
+    drawPieces();
+    SDL_RenderPresent(rendere);
 }
 
 void game::drawBoard(){
-    SDL_RenderClear(rendere);
-
     SDL_Rect rect;
     rect.h = SQ_size;
     rect.w = SQ_size;
@@ -55,5 +62,13 @@ void game::drawBoard(){
             SDL_RenderFillRect(rendere,&rect);
         }
     }
-    SDL_RenderPresent(rendere);
+}
+
+void game::drawPieces(){
+    SDL_Rect rect;
+    rect.h = 55;
+    rect.w = 55;
+    rect.x = 55;
+    rect.y = 55;
+    SDL_RenderCopy(rendere, bB, NULL, &rect);
 }
