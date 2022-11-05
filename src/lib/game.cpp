@@ -1,6 +1,4 @@
 #include <iostream>
-
-
 #include "../include/game.hpp"
 
 
@@ -72,7 +70,6 @@ void game::drawEverything(){
 }
 
 void game::drawBoard(){
-    SDL_Rect rect;
     rect.h = SQ_size;
     rect.w = SQ_size;
     for(int r = 0; r < BOARD_DIMENTION; r++){
@@ -88,10 +85,66 @@ void game::drawBoard(){
 }
 
 void game::drawPieces(){
-    SDL_Rect rect;
-    rect.h = 55;
-    rect.w = 55;
-    rect.x = 55;
-    rect.y = 55;
-    SDL_RenderCopy(rendere, wK, NULL, &rect);
+    for(int r = 0; r < BOARD_DIMENTION; r++){
+        for(int c = 0; c < BOARD_DIMENTION; c++){
+
+            rect.h = SQ_size;
+            rect.w = SQ_size;
+            rect.x = r*SQ_size;
+            rect.y = c*SQ_size;
+
+            int square = chessEngien.pieceOnSquare(c,r);
+            if(square & 0b10000000){
+                switch (square)
+                {
+                case 0b10100000:
+                    SDL_RenderCopy(rendere, wP, NULL, &rect);
+                    break;
+                case 0b10010000:
+                    SDL_RenderCopy(rendere, wR, NULL, &rect);
+                    break;
+                case 0b10001000:
+                    SDL_RenderCopy(rendere, wN, NULL, &rect);
+                    break;
+                case 0b10000100:
+                    SDL_RenderCopy(rendere, wB, NULL, &rect);
+                    break;
+                case 0b10000010:
+                    SDL_RenderCopy(rendere, wQ, NULL, &rect);
+                    break;
+                case 0b10000001:
+                    SDL_RenderCopy(rendere, wK, NULL, &rect);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (square & 0b01000000)
+            {
+                switch (square)
+                {
+                case 0b01100000:
+                    SDL_RenderCopy(rendere, bP, NULL, &rect);
+                    break;
+                case 0b01010000:
+                    SDL_RenderCopy(rendere, bR, NULL, &rect);
+                    break;
+                case 0b01001000:
+                    SDL_RenderCopy(rendere, bN, NULL, &rect);
+                    break;
+                case 0b01000100:
+                    SDL_RenderCopy(rendere, bB, NULL, &rect);
+                    break;
+                case 0b01000010:
+                    SDL_RenderCopy(rendere, bQ, NULL, &rect);
+                    break;
+                case 0b01000001:
+                    SDL_RenderCopy(rendere, bK, NULL, &rect);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
 }

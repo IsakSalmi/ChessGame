@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Config.hpp"
+#include "ChessEngine.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -19,7 +20,10 @@ private:
 
     SDL_Event windowEvent;
 
+    SDL_Rect rect;
     int SQ_size;
+
+    ChessEngien chessEngien;
 
     void drawEverything();
     void drawBoard();
