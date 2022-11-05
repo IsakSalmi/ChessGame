@@ -9,15 +9,38 @@ game::game(){
     rendere = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     SQ_size = BOARD_HEIGHT/BOARD_DIMENTION;
 
-    bB = IMG_LoadTexture(rendere,"../src/images/wK.png");
-    if(!bB){
-        cout << SDL_GetError() << endl;
-    }
+    wK = IMG_LoadTexture(rendere,"../src/images/wK.png");
+    wQ = IMG_LoadTexture(rendere,"../src/images/wQ.png");
+    wB = IMG_LoadTexture(rendere,"../src/images/wB.png");
+    wN = IMG_LoadTexture(rendere,"../src/images/wN.png");
+    wR = IMG_LoadTexture(rendere,"../src/images/wR.png");
+    wP = IMG_LoadTexture(rendere,"../src/images/wP.png");
+
+    bK = IMG_LoadTexture(rendere,"../src/images/bK.png");
+    bQ = IMG_LoadTexture(rendere,"../src/images/bQ.png");
+    bB = IMG_LoadTexture(rendere,"../src/images/bB.png");
+    bN = IMG_LoadTexture(rendere,"../src/images/bN.png");
+    bR = IMG_LoadTexture(rendere,"../src/images/bR.png");
+    bP = IMG_LoadTexture(rendere,"../src/images/bP.png");
+    
 }
 game::~game(){
 
     SDL_DestroyRenderer(rendere);
     SDL_DestroyWindow(window);
+    SDL_DestroyTexture(wK);
+    SDL_DestroyTexture(wQ);
+    SDL_DestroyTexture(wB);
+    SDL_DestroyTexture(wN);
+    SDL_DestroyTexture(wR);
+    SDL_DestroyTexture(wP);
+
+    SDL_DestroyTexture(bK);
+    SDL_DestroyTexture(bQ);
+    SDL_DestroyTexture(bB);
+    SDL_DestroyTexture(bN);
+    SDL_DestroyTexture(bR);
+    SDL_DestroyTexture(bP);
 }
 
 void game::startGame(){
@@ -70,5 +93,5 @@ void game::drawPieces(){
     rect.w = 55;
     rect.x = 55;
     rect.y = 55;
-    SDL_RenderCopy(rendere, bB, NULL, &rect);
+    SDL_RenderCopy(rendere, wK, NULL, &rect);
 }

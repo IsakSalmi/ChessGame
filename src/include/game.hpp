@@ -14,7 +14,8 @@ private:
     SDL_Window *window;
     SDL_Renderer *rendere;
 
-    SDL_Texture *bB;
+    SDL_Texture *wK, *wQ, *wB, *wN, *wR, *wP;
+    SDL_Texture *bK, *bQ, *bB, *bN, *bR, *bP;
 
     SDL_Event windowEvent;
 
