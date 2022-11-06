@@ -11,6 +11,10 @@ class game
 {
 private:
     const int WIDTH = BOARD_WIDTH, HEIGHT = BOARD_HEIGHT;
+    const int fps = 30;
+    const int desiredDelta = 1000/fps;
+    bool run;
+    int startc, startr, endc, endr;
 
     SDL_Window *window;
     SDL_Renderer *rendere;

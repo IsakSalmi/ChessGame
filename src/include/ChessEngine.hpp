@@ -19,6 +19,7 @@ private:
 
 public:
     int pieceOnSquare(int c, int r);
+    void makeMove(int startc, int startr, int endc, int endr);
 
     ChessEngien();
     ~ChessEngien();
