@@ -6,11 +6,12 @@ ChessEngien::ChessEngien(){
 ChessEngien::~ChessEngien(){
 }
 
-int ChessEngien::pieceOnSquare(int c, int r){return board[c][r];}
+int ChessEngien::pieceOnSquare(int r, int c){return board[r][c];}
 
-void ChessEngien::makeMove(int startc, int startr, int endc, int endr){
-    int movingPiece = board[startr][startc];
+void ChessEngien::makeMove(Move newMove){
+    int movingPiece = board[newMove.startr][newMove.startc];
     
-    board[endr][endc] = movingPiece;
-    board[startr][startc] = 0b00000000;
+    board[newMove.endr][newMove.endc] = movingPiece;
+    board[newMove.startr][newMove.startc] = 0b00000000;
+
 }

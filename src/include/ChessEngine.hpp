@@ -1,7 +1,8 @@
 #pragma once
 
 #include <iostream>
-
+#include "move.hpp"
+class Move;
 class ChessEngien{
 private:
     // 0b10000000 = white    0b010000000 = black
@@ -16,10 +17,9 @@ private:
                         {0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000},
                         {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
 
-
 public:
     int pieceOnSquare(int c, int r);
-    void makeMove(int startc, int startr, int endc, int endr);
+    void makeMove(Move newMove);
 
     ChessEngien();
     ~ChessEngien();

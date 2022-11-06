@@ -1,7 +1,6 @@
 #include <iostream>
 #include "../include/game.hpp"
 
-
 game::game(){
     window = SDL_CreateWindow("chessGame",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,SDL_WINDOW_ALLOW_HIGHDPI);
     rendere = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
@@ -79,7 +78,9 @@ void game::startGame(){
 
                         endc = ec/SQ_size;
                         endr = er/SQ_size;
-                        chessEngien.makeMove(startc,startr,endc,endr);
+
+                        
+                        chessEngien.makeMove(Move(startr,startc,endr,endc,chessEngien));
 
                         firstClick = true;
                     }
@@ -127,10 +128,10 @@ void game::drawPieces(){
 
             rect.h = SQ_size;
             rect.w = SQ_size;
-            rect.x = r*SQ_size;
-            rect.y = c*SQ_size;
+            rect.x = c*SQ_size;
+            rect.y = r*SQ_size;
 
-            int square = chessEngien.pieceOnSquare(c,r);
+            int square = chessEngien.pieceOnSquare(r,c);
             if(square & 0b10000000){
                 switch (square)
                 {

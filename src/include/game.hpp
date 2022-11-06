@@ -1,7 +1,9 @@
 #pragma once
+
 #include <iostream>
 #include "Config.hpp"
 #include "ChessEngine.hpp"
+#include "move.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
