@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <iostream>
 #include "move.hpp"
+
+using namespace std;
 class Move;
 class ChessEngien{
 private:
@@ -16,10 +19,12 @@ private:
                         {0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000},
                         {0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000},
                         {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
+    vector<Move> moves;
 
 public:
-    int pieceOnSquare(int c, int r);
+    int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
+    vector<Move> allPossibleMove();
 
     ChessEngien();
     ~ChessEngien();

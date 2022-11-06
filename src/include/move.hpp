@@ -18,5 +18,7 @@ public:
 
     Move(int sr, int sc, int er, int ec, ChessEngien gameState);
     ~Move();
+
+    bool operator==(const Move& move);
 };
 

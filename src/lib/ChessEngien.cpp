@@ -15,3 +15,12 @@ void ChessEngien::makeMove(Move newMove){
     board[newMove.startr][newMove.startc] = 0b00000000;
 
 }
+
+
+vector<Move> ChessEngien::allPossibleMove(){
+    moves.clear();
+
+    moves.push_back(Move(6,0,5,0,*this));
+    return moves;
+}
+

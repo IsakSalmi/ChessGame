@@ -47,7 +47,7 @@ void game::startGame(){
     SDL_Init(SDL_INIT_EVERYTHING);
 
     bool firstClick = true;
-
+    vector<Move> validMoves = chessEngien.allPossibleMove();
 
     if(window == NULL){
         std::cout << "cant create window" << SDL_GetError() << std::endl;
@@ -79,8 +79,15 @@ void game::startGame(){
                         endc = ec/SQ_size;
                         endr = er/SQ_size;
 
-                        
-                        chessEngien.makeMove(Move(startr,startc,endr,endc,chessEngien));
+                        Move newMove = Move(startr,startc,endr,endc,chessEngien);
+                        cout << newMove.startr << newMove.startc << endl;
+                        cout << newMove.endr << newMove.endc << endl;
+
+                        for(int i=0; i < validMoves.size();i++){
+                            if(newMove == validMoves[i]){
+                                chessEngien.makeMove(newMove);
+                            }
+                        }
 
                         firstClick = true;
                     }
