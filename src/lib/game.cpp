@@ -64,8 +64,8 @@ void game::startGame(){
 
                 case SDL_MOUSEBUTTONDOWN:
                     if(firstClick){
-                        int sc = windowEvent.motion.x;
-                        int sr = windowEvent.motion.y;
+                        int sc = windowEvent.button.x;
+                        int sr = windowEvent.button.y;
 
                         startc = sc/SQ_size;
                         startr = sr/SQ_size;
@@ -73,8 +73,8 @@ void game::startGame(){
                         firstClick = false;
                     }
                     else if(!firstClick){
-                        int ec = windowEvent.motion.x;
-                        int er = windowEvent.motion.y;
+                        int ec = windowEvent.button.x;
+                        int er = windowEvent.button.y;
 
                         endc = ec/SQ_size;
                         endr = er/SQ_size;
