@@ -23,6 +23,8 @@ private:
     vector<Move> moves;
     void getPawnMove(int startr, int startc, int piece);
 
+    bool whiteToMove;
+
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
