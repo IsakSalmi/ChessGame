@@ -6,6 +6,7 @@ game::game(){
     rendere = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     SQ_size = BOARD_HEIGHT/BOARD_DIMENTION;
     run = true;
+    chessEngien = new ChessEngien;
 
     wK = IMG_LoadTexture(rendere,"../src/images/wK.png");
     wQ = IMG_LoadTexture(rendere,"../src/images/wQ.png");
@@ -47,7 +48,8 @@ void game::startGame(){
     SDL_Init(SDL_INIT_EVERYTHING);
 
     bool firstClick = true;
-    vector<Move> validMoves = chessEngien.allPossibleMove();
+    bool moveMade = false;
+    vector<Move> validMoves = chessEngien->allPossibleMove();
 
     if(window == NULL){
         std::cout << "cant create window" << SDL_GetError() << std::endl;
@@ -79,13 +81,15 @@ void game::startGame(){
                         endc = ec/SQ_size;
                         endr = er/SQ_size;
 
-                        Move newMove = Move(startr,startc,endr,endc,chessEngien);
+                        Move newMove = Move(startr,startc,endr,endc,*chessEngien);
                         cout << newMove.startr << newMove.startc << endl;
                         cout << newMove.endr << newMove.endc << endl;
 
                         for(int i=0; i < validMoves.size();i++){
                             if(newMove == validMoves[i]){
-                                chessEngien.makeMove(newMove);
+                                chessEngien->makeMove(newMove);
+                                moveMade = true;
+                                break;
                             }
                         }
 
@@ -93,9 +97,16 @@ void game::startGame(){
                     }
 
                 default:
-                    break;
+                    break;   
             }
         }
+
+        if(moveMade){
+                validMoves.clear();
+                validMoves = chessEngien->allPossibleMove();
+                moveMade = false;
+            }
+
         drawEverything();
 
         //for fps
@@ -138,7 +149,7 @@ void game::drawPieces(){
             rect.x = c*SQ_size;
             rect.y = r*SQ_size;
 
-            int square = chessEngien.pieceOnSquare(r,c);
+            int square = chessEngien->pieceOnSquare(r,c);
             if(square & 0b10000000){
                 switch (square)
                 {

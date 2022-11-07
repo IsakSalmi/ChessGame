@@ -29,7 +29,7 @@ private:
     SDL_Rect rect;
     int SQ_size;
 
-    ChessEngien chessEngien;
+    ChessEngien *chessEngien;
 
     void drawEverything();
     void drawBoard();
