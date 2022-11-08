@@ -66,6 +66,10 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         if(board[startr-1][startc] == 0b00000000){
             moves.push_back(Move(startr,startc,startr - 1, startc, *this));
         }
+
+        if(board[startr-1][startc+1] & 0b01000000){
+            moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
+        }
     }
     else if((piece & 0b01000000)){
         if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
