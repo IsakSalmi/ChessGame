@@ -31,7 +31,9 @@ vector<Move> ChessEngien::allPossibleMove(){
                         case 0b10100000:
                             getPawnMove(r,c,this->board[r][c]);
                             break;
-                        
+                        case 0b10001000:
+                            getKnightMove(r,c,this->board[r][c]);
+                            break;
                         default:
                             break;
                     }
@@ -45,7 +47,9 @@ vector<Move> ChessEngien::allPossibleMove(){
                         case 0b01100000:
                             getPawnMove(r,c,this->board[r][c]);
                             break;
-                        
+                        case 0b01001000:
+                            getKnightMove(r,c,this->board[r][c]);
+                            break;
                         default:
                             break;
                     }
@@ -92,4 +96,31 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         }
     }
 }
+
+
+void ChessEngien::getKnightMove(int startr, int startc, int piece){
+    int direction[8][2] = {{-1,-2},{-2,-1},{1,-2},{2,-1},{1,2},{2,1},{-1,2},{-2,1}};
+    int endr, endc;
+    if(piece & 0b10000000){
+        for(int d = 0; d < 8;d++){
+            endr = startr + direction[d][0];
+            endc = startc + direction[d][1];
+            if((0 >= endr < BOARD_DIMENTION) && (0 >= endr < BOARD_DIMENTION) && !(board[endr][endc] & 0b10000000)){
+                moves.push_back(Move(startr,startc,endr,endc,*this));
+            }
+        }
+    }
+    else{
+        for(int d = 0; d < 8;d++){
+            endr = startr + direction[d][0];
+            endc = startc + direction[d][1];
+            if((0 >= endr < BOARD_DIMENTION) && (0 >= endr < BOARD_DIMENTION) && !(board[endr][endc] & 0b01000000)){
+                moves.push_back(Move(startr,startc,endr,endc,*this));
+            }
+        }
+    }
+}
+
+
+
 

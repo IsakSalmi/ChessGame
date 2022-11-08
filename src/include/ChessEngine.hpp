@@ -22,6 +22,7 @@ private:
                        {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
     vector<Move> moves;
     void getPawnMove(int startr, int startc, int piece);
+    void getKnightMove(int startr, int startc, int piece);
 
     bool whiteToMove;
 
