@@ -5,6 +5,7 @@ game::game(){
     window = SDL_CreateWindow("chessGame",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,SDL_WINDOW_ALLOW_HIGHDPI);
     rendere = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     SQ_size = BOARD_HEIGHT/BOARD_DIMENTION;
+    SDL_SetRenderDrawBlendMode(rendere,SDL_BLENDMODE_BLEND);
     run = true;
     chessEngien = new ChessEngien;
 
@@ -49,6 +50,7 @@ void game::startGame(){
 
     bool firstClick = true;
     bool moveMade = false;
+    int selectedSQr, selectedSQc = -1;
     vector<Move> validMoves = chessEngien->allPossibleMove();
 
     if(window == NULL){
@@ -72,7 +74,16 @@ void game::startGame(){
                         startc = sc/SQ_size;
                         startr = sr/SQ_size;
 
-                        firstClick = false;
+                        if((chessEngien->pieceOnSquare(startr,startc)&0b10000000) && chessEngien->whiteToMove){
+                            selectedSQr = startr;
+                            selectedSQc = startc;
+                            firstClick = false;
+                        }
+                        else if((chessEngien->pieceOnSquare(startr,startc)&0b01000000) && !chessEngien->whiteToMove){
+                            selectedSQr = startr;
+                            selectedSQc = startc;
+                            firstClick = false;
+                        }
                     }
                     else if(!firstClick){
                         int ec = windowEvent.button.x;
@@ -81,9 +92,12 @@ void game::startGame(){
                         endc = ec/SQ_size;
                         endr = er/SQ_size;
 
+
                         Move newMove = Move(startr,startc,endr,endc,*chessEngien);
-                        cout << newMove.startr << newMove.startc << endl;
-                        cout << newMove.endr << newMove.endc << endl;
+
+                        //diselect the squre;
+                        selectedSQc = -1;
+                        selectedSQr = -1;
 
                         for(int i=0; i < validMoves.size();i++){
                             if(newMove == validMoves[i]){
@@ -107,7 +121,7 @@ void game::startGame(){
                 moveMade = false;
             }
 
-        drawEverything();
+        drawEverything(selectedSQr,selectedSQc, validMoves);
 
         //for fps
         int delta = SDL_GetTicks() - startLoop;
@@ -118,9 +132,10 @@ void game::startGame(){
 }
 
 
-void game::drawEverything(){
+void game::drawEverything(int sqr, int sqc, vector<Move> validMoves){
     SDL_RenderClear(rendere);
     drawBoard();
+    highlightSquare(sqr, sqc, validMoves);
     drawPieces();
     SDL_RenderPresent(rendere);
 }
@@ -139,6 +154,36 @@ void game::drawBoard(){
         }
     }
 }
+
+
+void game::highlightSquare(int sqr, int sqc, vector<Move> validMoves){
+    int team;
+    if(chessEngien->whiteToMove){team = 0b10000000;}
+    else{team = 0b01000000;}
+
+    if(sqr != -1 && sqc != -1){
+        if(chessEngien->pieceOnSquare(sqr,sqc)&team){
+            rect.h = SQ_size;
+            rect.w = SQ_size;
+            rect.x = sqc * SQ_size;
+            rect.y = sqr * SQ_size;
+            SDL_SetRenderDrawColor(rendere,255,0,0,100);
+            SDL_RenderDrawRect(rendere,&rect);
+            SDL_RenderFillRect(rendere,&rect);
+            for(int i=0; i<validMoves.size(); i++){
+                if(validMoves[i].startr == sqr && validMoves[i].startc == sqc){
+                    if(!(chessEngien->pieceOnSquare(validMoves[i].endr , validMoves[i].endc) & team)){
+                        rect.x = validMoves[i].endc * SQ_size;
+                        rect.y = validMoves[i].endr * SQ_size;
+                        SDL_RenderDrawRect(rendere,&rect);
+                        SDL_RenderFillRect(rendere,&rect);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void game::drawPieces(){
     for(int r = 0; r < BOARD_DIMENTION; r++){

@@ -13,7 +13,7 @@ class game
 {
 private:
     const int WIDTH = BOARD_WIDTH, HEIGHT = BOARD_HEIGHT;
-    const int fps = 30;
+    const int fps = FPS;
     const int desiredDelta = 1000/fps;
     bool run;
     int startc, startr, endc, endr;
@@ -31,9 +31,10 @@ private:
 
     ChessEngien *chessEngien;
 
-    void drawEverything();
+    void drawEverything(int sqr, int sqc, vector<Move> validMoves);
     void drawBoard();
     void drawPieces();
+    void highlightSquare(int sqr, int sqc, vector<Move> validMoves);
 public:
     game();
     ~game();

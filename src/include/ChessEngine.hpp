@@ -24,12 +24,12 @@ private:
     void getPawnMove(int startr, int startc, int piece);
     void getKnightMove(int startr, int startc, int piece);
 
-    bool whiteToMove;
 
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
     vector<Move> allPossibleMove();
+    bool whiteToMove;
 
     ChessEngien();
     ~ChessEngien();
