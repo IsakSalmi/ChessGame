@@ -58,7 +58,7 @@ vector<Move> ChessEngien::allPossibleMove(){
 }
 
 void ChessEngien::getPawnMove(int startr, int startc, int piece){
-    if(piece & 0b10000000){
+    if((piece & 0b10000000) && startr != 0){
         if((startr == 6) && (board[startr-2][startc] == 0b00000000)){
             moves.push_back(Move(startr,startc,startr - 2, startc, *this));
         }
@@ -67,16 +67,28 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
             moves.push_back(Move(startr,startc,startr - 1, startc, *this));
         }
 
+
         if(board[startr-1][startc+1] & 0b01000000){
             moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
         }
+        else if(board[startr-1][startc-1] & 0b01000000){
+            moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
+        }
     }
-    else if((piece & 0b01000000)){
+    else if((piece & 0b01000000) && startr != 7){
         if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
             moves.push_back(Move(startr,startc,startr + 2, startc, *this));
         }
         if(board[startr+1][startc] == 0b00000000){
             moves.push_back(Move(startr,startc,startr + 1, startc, *this));
+        }
+
+
+        if(board[startr+1][startc+1] & 0b10000000){
+            moves.push_back(Move(startr,startc,startr+1,startc+1,*this));
+        }
+        else if(board[startr+1][startc-1] & 0b10000000){
+            moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
         }
     }
 }
