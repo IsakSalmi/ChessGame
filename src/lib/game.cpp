@@ -51,7 +51,7 @@ void game::startGame(){
     bool firstClick = true;
     bool moveMade = false;
     int selectedSQr, selectedSQc = -1;
-    vector<Move> validMoves = chessEngien->allPossibleMove();
+    vector<Move> validMoves = chessEngien->getValidMove();
 
     if(window == NULL){
         std::cout << "cant create window" << SDL_GetError() << std::endl;
@@ -101,7 +101,7 @@ void game::startGame(){
 
                         for(int i=0; i < validMoves.size();i++){
                             if(newMove == validMoves[i]){
-                                chessEngien->makeMove(newMove);
+                                chessEngien->makeMove(validMoves[i]);
                                 moveMade = true;
                                 break;
                             }
@@ -122,7 +122,7 @@ void game::startGame(){
 
         if(moveMade){
                 validMoves.clear();
-                validMoves = chessEngien->allPossibleMove();
+                validMoves = chessEngien->getValidMove();
                 moveMade = false;
             }
 

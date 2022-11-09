@@ -2,6 +2,16 @@
 
 ChessEngien::ChessEngien(){
     whiteToMove = true;
+
+    castleRightBKS = true;
+    castleRightBQS = true;
+    castleRightWKS = true;
+    castleRightWQS = true;
+
+    wKingLocationR = 7;
+    wKingLocationC = 4;
+    bKingLocationR = 0;
+    bKingLocationC = 4; 
 }
 
 ChessEngien::~ChessEngien(){
@@ -11,17 +21,40 @@ int ChessEngien::pieceOnSquare(int r, int c){return board[r][c];}
 
 void ChessEngien::makeMove(Move newMove){
     int movingPiece = board[newMove.startr][newMove.startc];
+    int team;
+    if(whiteToMove){team = 0b10000000;}
+    else{team = 0b01000000;}
     
     board[newMove.endr][newMove.endc] = movingPiece;
     board[newMove.startr][newMove.startc] = 0b00000000;
-
     moveLogs.push_back(newMove);
 
+    if(movingPiece == 0b10000001){
+        wKingLocationR = newMove.endr;
+        wKingLocationC = newMove.endc;
+    }
+    else if(movingPiece == 0b01000001){
+        bKingLocationR = newMove.endr;
+        bKingLocationC = newMove.endc;
+    }
+
+    if(newMove.CastlingMove){
+        if(newMove.endc < newMove.startc){
+            board[newMove.endr][0] = 0b00000000;
+            board[newMove.endr][newMove.endc + 1] = team + 0b00010000;
+        }
+        else{
+            board[newMove.endr][7] = 0b00000000;
+            board[newMove.endr][newMove.endc - 1] = team + 0b00010000;
+        }
+    }
+
     whiteToMove = !whiteToMove;
+    updateCastlingRights(newMove);
 
 }
 
-
+// dont work
 void ChessEngien::undoMove(){
     if(moveLogs.size() != 0){
         Move move = moveLogs.back();
@@ -38,7 +71,35 @@ void ChessEngien::undoMove(){
 }
 
 
-vector<Move> ChessEngien::allPossibleMove(){
+void ChessEngien::updateCastlingRights(Move move){
+    if(move.pieceMoved == 0b10000001){
+        castleRightWKS = false;
+        castleRightWQS = false;
+    }
+    else if(move.pieceMoved == 0b01000001){
+        castleRightBKS = false;
+        castleRightBQS = false;
+    }
+    else if(move.pieceMoved == 0b10010000){
+        if((move.startr == 7) &&(move.startc == 0)){
+            castleRightWQS = false;
+        }
+        if((move.startr == 7)&&(move.startc == 7)){
+            castleRightWKS = false;
+        }
+    }
+    else if(move.pieceMoved == 0b01010000){
+        if((move.startr == 0) && (move.startc == 0)){
+            castleRightBQS = false;
+        }
+        if((move.startr == 0) && (move.startc == 7)){
+            castleRightBKS = false;
+        }
+    }
+}
+
+
+void ChessEngien::allPossibleMove(){
     moves.clear();
     for(int r = 0; r < BOARD_DIMENTION; r++){
         for(int c = 0; c < BOARD_DIMENTION; c++){
@@ -98,7 +159,24 @@ vector<Move> ChessEngien::allPossibleMove(){
             }
         }
     }
-    
+}
+
+
+vector<Move> ChessEngien::getValidMove(){
+    int kingr, kingc;
+
+    if(whiteToMove){
+        kingr = wKingLocationR;
+        kingc = wKingLocationC;
+    }
+    if(!whiteToMove){
+        kingr = bKingLocationR;
+        kingc = bKingLocationC;
+    }
+
+    allPossibleMove();
+    getCastlingMoves(kingr,kingc,board[kingr][kingc]);
+
     return moves;
 }
 
@@ -276,3 +354,26 @@ void ChessEngien::getKingmove(int startr, int startc, int piece){
         }
     }
 }
+
+
+void ChessEngien::getCastlingMoves(int startr, int startc, int piece){
+    if((whiteToMove && castleRightWKS) or (!(whiteToMove) && castleRightBKS)){
+        if((board[startr][startc +1] == 0b00000000) && (board[startr][startc+2] == 0b00000000)){
+            moves.push_back(Move(startr,startc,startr,startc+2,*this,true));
+        }
+    }
+    if((whiteToMove && castleRightWQS) or (!(whiteToMove) && castleRightBQS)){
+        if((board[startr][startc -1] == 0b00000000) && (board[startr][startc-2] == 0b00000000)){
+            moves.push_back(Move(startr,startc,startr,startc-2,*this,true));
+        }
+    }
+}
+
+
+
+
+
+
+
+
+

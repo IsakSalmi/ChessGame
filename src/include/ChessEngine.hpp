@@ -22,18 +22,26 @@ private:
                        {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
     vector<Move> moves;
     vector<Move> moveLogs;
+    void allPossibleMove();
+
     void getPawnMove(int startr, int startc, int piece);
     void getKnightMove(int startr, int startc, int piece);
     void getRookMove(int startr, int startc, int piece);
     void getBishoppMove(int startr, int startc, int piece);
     void getQueenMove(int startr, int startc, int piece);
     void getKingmove(int startr, int startc, int piece);
+    void getCastlingMoves(int startr, int startc, int piece);
+
+    bool castleRightWKS, castleRightBKS, castleRightWQS, castleRightBQS;
+    void updateCastlingRights(Move move);
+
+    int wKingLocationR, wKingLocationC, bKingLocationR, bKingLocationC;
 
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
     void undoMove();
-    vector<Move> allPossibleMove();
+    vector<Move> getValidMove();
     bool whiteToMove;
 
     ChessEngien();
