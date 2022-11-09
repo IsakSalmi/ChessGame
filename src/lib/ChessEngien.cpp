@@ -34,6 +34,9 @@ vector<Move> ChessEngien::allPossibleMove(){
                         case 0b10001000:
                             getKnightMove(r,c,this->board[r][c]);
                             break;
+                        case 0b10010000:
+                            getRookMove(r,c,this->board[r][c]);
+                            break;
                         default:
                             break;
                     }
@@ -50,6 +53,9 @@ vector<Move> ChessEngien::allPossibleMove(){
                         case 0b01001000:
                             getKnightMove(r,c,this->board[r][c]);
                             break;
+                        case 0b01010000:
+                            getRookMove(r,c,this->board[r][c]);
+                            break;
                         default:
                             break;
                     }
@@ -60,6 +66,7 @@ vector<Move> ChessEngien::allPossibleMove(){
     
     return moves;
 }
+
 
 void ChessEngien::getPawnMove(int startr, int startc, int piece){
     if((piece & 0b10000000) && startr != 0){
@@ -114,7 +121,7 @@ void ChessEngien::getKnightMove(int startr, int startc, int piece){
         for(int d = 0; d < 8;d++){
             endr = startr + direction[d][0];
             endc = startc + direction[d][1];
-            if((0 >= endr < BOARD_DIMENTION) && (0 >= endr < BOARD_DIMENTION) && !(board[endr][endc] & 0b01000000)){
+            if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION) && !(board[endr][endc] & 0b01000000)){
                 moves.push_back(Move(startr,startc,endr,endc,*this));
             }
         }
@@ -122,5 +129,54 @@ void ChessEngien::getKnightMove(int startr, int startc, int piece){
 }
 
 
-
+void ChessEngien::getRookMove(int startr, int startc, int piece){
+    int direction[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+    int endr, endc;
+    if(piece & 0b10000000){
+        for(int i = 0; i < 4;i++){
+            for(int z =1 ; z < 8; z++){
+                endr = startr + (direction[i][0] * z);
+                endc = startc + (direction[i][1] * z);
+                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
+                    if(board[endr][endc] == 0b00000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                    }
+                    else if(board[endr][endc] & 0b01000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                        break;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < 4;i++){
+            for(int z =1 ; z < 8; z++){
+                endr = startr + (direction[i][0] * z);
+                endc = startc + (direction[i][1] * z);
+                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
+                    if(board[endr][endc] == 0b00000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                    }
+                    else if(board[endr][endc] & 0b10000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                        break;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+    }
+}
 

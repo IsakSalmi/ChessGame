@@ -23,7 +23,7 @@ private:
     vector<Move> moves;
     void getPawnMove(int startr, int startc, int piece);
     void getKnightMove(int startr, int startc, int piece);
-
+    void getRookMove(int startr, int startc, int piece);
 
 public:
     int pieceOnSquare(int r, int c);
