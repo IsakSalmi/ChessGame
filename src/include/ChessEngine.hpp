@@ -21,13 +21,18 @@ private:
                        {0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000, 0b10100000},
                        {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
     vector<Move> moves;
+    vector<Move> moveLogs;
     void getPawnMove(int startr, int startc, int piece);
     void getKnightMove(int startr, int startc, int piece);
     void getRookMove(int startr, int startc, int piece);
+    void getBishoppMove(int startr, int startc, int piece);
+    void getQueenMove(int startr, int startc, int piece);
+    void getKingmove(int startr, int startc, int piece);
 
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
+    void undoMove();
     vector<Move> allPossibleMove();
     bool whiteToMove;
 

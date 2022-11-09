@@ -109,7 +109,12 @@ void game::startGame(){
 
                         firstClick = true;
                     }
-
+                case SDL_KEYDOWN:
+                    if(windowEvent.key.keysym.sym == SDLK_z){
+                        chessEngien->undoMove();
+                        moveMade = true;
+                    }
+                    break;
                 default:
                     break;   
             }

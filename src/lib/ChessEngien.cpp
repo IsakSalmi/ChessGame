@@ -14,8 +14,27 @@ void ChessEngien::makeMove(Move newMove){
     
     board[newMove.endr][newMove.endc] = movingPiece;
     board[newMove.startr][newMove.startc] = 0b00000000;
+
+    moveLogs.push_back(newMove);
+
     whiteToMove = !whiteToMove;
 
+}
+
+
+void ChessEngien::undoMove(){
+    if(moveLogs.size() != 0){
+        Move move = moveLogs.back();
+        moveLogs.pop_back();
+        board[move.startr][move.startc] = move.pieceMoved;
+        board[move.endr][move.endc] = move.pieceCapture;
+
+        if(whiteToMove){whiteToMove = false;}
+        else{whiteToMove = true;}
+    }
+    else{
+        cout << "no move to undo" << endl;
+    }
 }
 
 
@@ -37,6 +56,14 @@ vector<Move> ChessEngien::allPossibleMove(){
                         case 0b10010000:
                             getRookMove(r,c,this->board[r][c]);
                             break;
+                        case 0b10000100:
+                            getBishoppMove(r,c,this->board[r][c]);
+                            break;
+                        case 0b10000010:
+                            getQueenMove(r,c,this->board[r][c]);
+                        case 0b10000001:
+                            getKingmove(r,c,this->board[r][c]);
+                            break;
                         default:
                             break;
                     }
@@ -55,6 +82,14 @@ vector<Move> ChessEngien::allPossibleMove(){
                             break;
                         case 0b01010000:
                             getRookMove(r,c,this->board[r][c]);
+                            break;
+                        case 0b01000100:
+                            getBishoppMove(r,c,this->board[r][c]);
+                            break;
+                        case 0b01000010:
+                            getQueenMove(r,c,this->board[r][c]);
+                        case 0b01000001:
+                            getKingmove(r,c,this->board[r][c]);
                             break;
                         default:
                             break;
@@ -168,15 +203,76 @@ void ChessEngien::getRookMove(int startr, int startc, int piece){
                         moves.push_back(Move(startr,startc,endr,endc,*this));
                         break;
                     }
-                    else{
-                        break;
-                    }
+                    else{break;}
                 }
-                else{
-                    break;
-                }
+                else{break;}
             }
         }
     }
 }
 
+
+void ChessEngien::getBishoppMove(int startr, int startc, int piece){
+    int direction[4][2] = {{-1,1},{-1,-1},{1,1},{1,-1}};
+    int endr, endc;
+    if(piece & 0b10000000){
+        for(int i = 0; i < 4;i++){
+            for(int z =1 ; z < 8; z++){
+                endr = startr + (direction[i][0] * z);
+                endc = startc + (direction[i][1] * z);
+                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
+                    if(board[endr][endc] == 0b00000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                    }
+                    else if(board[endr][endc] & 0b01000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                        break;
+                    }
+                    else{break;}
+                }
+                else{break;}
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < 4;i++){
+            for(int z =1 ; z < 8; z++){
+                endr = startr + (direction[i][0] * z);
+                endc = startc + (direction[i][1] * z);
+                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
+                    if(board[endr][endc] == 0b00000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                    }
+                    else if(board[endr][endc] & 0b10000000){
+                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                        break;
+                    }
+                    else{break;}
+                }
+                else{break;}
+            }
+        }
+    }
+}
+
+
+void ChessEngien::getQueenMove(int startr, int startc, int piece){
+    getBishoppMove(startr, startc, piece);
+    getRookMove(startr, startc, piece);
+}
+
+
+void ChessEngien::getKingmove(int startr, int startc, int piece){
+    int direction[8][2] = {{1,-1},{1,0},{1,1},{-1,-1},{-1,0},{-1,1},{0,-1},{0,1}};
+    int endr, endc, team;
+    if(piece & 0b10000000){team = 0b10000000;}
+    else{team = 0b01000000;}
+
+    for(int i=0; i<8; i++){
+        endr = startr + direction[i][0];
+        endc = startc + direction[i][1];
+        if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION) && !(board[endr][endc] & team)){
+            moves.push_back(Move(startr,startc,endr,endc,*this));
+        }
+    }
+}
