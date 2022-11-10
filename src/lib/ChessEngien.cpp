@@ -54,7 +54,6 @@ void ChessEngien::makeMove(Move newMove){
 
 }
 
-// dont work
 void ChessEngien::undoMove(){
     if(moveLogs.size() != 0){
         Move move = moveLogs.back();
@@ -71,10 +70,53 @@ void ChessEngien::undoMove(){
             bKingLocationC = move.startc;
         }
 
-        
+        if(move.CastlingMove){
+            if(move.endc < move.startc){
+                if(move.pieceMoved == 0b10000001){
+                    board[7][0] = 0b10010000;
+                    board[7][3] = 0b00000000;
+                    castleRightWQS = true;
+                    castleRightWKS = true;
+                }
+                else{
+                    board[0][0] = 0b01010000;
+                    board[0][3] = 0b00000000;
+                    castleRightBQS = true;
+                    castleRightBKS = true;
+                }
+            }
+            else{
+                if(move.pieceMoved == 0b10000001){
+                    board[7][7] = 0b10010000;
+                    board[7][5] = 0b00000000;
+                    castleRightWKS = true;
+                    castleRightWQS = true;
+                }
+                else{
+                    board[0][7] = 0b01010000;
+                    board[0][5] = 0b00000000;
+                    castleRightBKS = true;
+                    castleRightBQS = true;
+                }
+            }
+        }
 
-        if(whiteToMove){whiteToMove = false;}
-        else{whiteToMove = true;}
+        if(move.pieceMoved & 0b00010000){
+            if(move.startr == 7 && move.startc == 7){
+                castleRightWKS = true;
+            }
+            else if(move.startr == 7 && move.startc == 0){
+                castleRightWQS = true;
+            }
+            else if(move.startr == 0 && move.startc == 7){
+                castleRightBKS = true;
+            }
+            else if(move.startr == 0 && move.startc == 0){
+                castleRightBQS = true;
+            }
+        }
+
+        whiteToMove = !whiteToMove;
     }
     else{
         cout << "no move to undo" << endl;
