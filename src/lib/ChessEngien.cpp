@@ -62,6 +62,17 @@ void ChessEngien::undoMove(){
         board[move.startr][move.startc] = move.pieceMoved;
         board[move.endr][move.endc] = move.pieceCapture;
 
+        if(move.pieceMoved == 0b10000001){
+            wKingLocationR = move.startr;
+            wKingLocationC = move.startc;
+        }
+        if(move.pieceMoved == 0b01000001){
+            bKingLocationR = move.startr;
+            bKingLocationC = move.startc;
+        }
+
+        
+
         if(whiteToMove){whiteToMove = false;}
         else{whiteToMove = true;}
     }
