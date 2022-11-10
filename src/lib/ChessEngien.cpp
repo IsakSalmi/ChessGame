@@ -11,7 +11,10 @@ ChessEngien::ChessEngien(){
     wKingLocationR = 7;
     wKingLocationC = 4;
     bKingLocationR = 0;
-    bKingLocationC = 4; 
+    bKingLocationC = 4;
+
+    enPassantPossibleCol = -1;
+    enPassantPossibleRow = -1;
 }
 
 ChessEngien::~ChessEngien(){
@@ -49,6 +52,19 @@ void ChessEngien::makeMove(Move newMove){
         }
     }
 
+    if((newMove.pieceMoved & 0b00100000) && (abs(newMove.endr - newMove.startr) == 2)){
+        enPassantPossibleRow = floor((newMove.startr + newMove.endr) / 2);
+        enPassantPossibleCol = newMove.endc; 
+    }
+    else{
+        enPassantPossibleCol = -1;
+        enPassantPossibleRow = -1;
+    }
+
+    if(newMove.EnPassantMove){
+        board[newMove.startr][newMove.endc] = 0b00000000;
+    }
+
     whiteToMove = !whiteToMove;
     updateCastlingRights(newMove);
 
@@ -59,7 +75,9 @@ void ChessEngien::undoMove(){
         Move move = moveLogs.back();
         moveLogs.pop_back();
         board[move.startr][move.startc] = move.pieceMoved;
-        board[move.endr][move.endc] = move.pieceCapture;
+        if(!move.EnPassantMove){
+            board[move.endr][move.endc] = move.pieceCapture;
+        }
 
         if(move.pieceMoved == 0b10000001){
             wKingLocationR = move.startr;
@@ -115,6 +133,12 @@ void ChessEngien::undoMove(){
                 castleRightBQS = true;
             }
         }
+
+        if(move.EnPassantMove){
+            board[move.endr][move.endc] = 0b00000000;
+            board[move.startr][move.endc] = move.pieceCapture;
+        }
+        
 
         whiteToMove = !whiteToMove;
     }
@@ -251,6 +275,14 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         else if(board[startr-1][startc-1] & 0b01000000){
             moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
         }
+
+
+        if((startr-1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
+            moves.push_back(Move(startr, startc, startr -1, startc -1, *this, false, true));
+        }
+        if((startr-1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
+            moves.push_back(Move(startr, startc, startr-1, startc+1, *this, false, true));
+        }
     }
     else if((piece & 0b01000000) && startr != 7){
         if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
@@ -266,6 +298,13 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         }
         else if(board[startr+1][startc-1] & 0b10000000){
             moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
+        }
+
+        if((startr+1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
+            moves.push_back(Move(startr, startc, startr+1, startc -1, *this, false, true));
+        }
+        if((startr+1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
+            moves.push_back(Move(startr, startc, startr+1, startc+1, *this, false, true));
         }
     }
 }
@@ -412,12 +451,12 @@ void ChessEngien::getKingmove(int startr, int startc, int piece){
 void ChessEngien::getCastlingMoves(int startr, int startc, int piece){
     if((whiteToMove && castleRightWKS) or (!(whiteToMove) && castleRightBKS)){
         if((board[startr][startc +1] == 0b00000000) && (board[startr][startc+2] == 0b00000000)){
-            moves.push_back(Move(startr,startc,startr,startc+2,*this,true));
+            moves.push_back(Move(startr,startc,startr,startc+2,*this,true,false));
         }
     }
     if((whiteToMove && castleRightWQS) or (!(whiteToMove) && castleRightBQS)){
         if((board[startr][startc -1] == 0b00000000) && (board[startr][startc-2] == 0b00000000)){
-            moves.push_back(Move(startr,startc,startr,startc-2,*this,true));
+            moves.push_back(Move(startr,startc,startr,startc-2,*this,true,false));
         }
     }
 }

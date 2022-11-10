@@ -4,6 +4,7 @@
 #include <iostream>
 #include "move.hpp"
 #include "Config.hpp"
+#include <math.h>
 
 using namespace std;
 class Move;
@@ -36,6 +37,7 @@ private:
     void updateCastlingRights(Move move);
 
     int wKingLocationR, wKingLocationC, bKingLocationR, bKingLocationC;
+    int enPassantPossibleRow, enPassantPossibleCol;
 
 public:
     int pieceOnSquare(int r, int c);

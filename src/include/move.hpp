@@ -15,10 +15,10 @@ public:
     int startr, startc, endr, endc;
     int pieceMoved;
     int pieceCapture;
-    bool CastlingMove;
+    bool CastlingMove, EnPassantMove;
 
     Move(int sr, int sc, int er, int ec, ChessEngien gameState);
-    Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlingMove);
+    Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlingMove, bool isEnPassantMove);
     ~Move();
 
     bool operator==(const Move& move);

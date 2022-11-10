@@ -10,9 +10,10 @@ Move::Move(int sr, int sc, int er, int ec, ChessEngien gameState){
     pieceMoved = gameState.pieceOnSquare(startr,startc);
     pieceCapture = gameState.pieceOnSquare(endr,endc);
     CastlingMove = false;
+    EnPassantMove = false;
 }
 
-Move::Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlingMove){
+Move::Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlingMove, bool isEnPassantMove){
     startc = sc;
     startr = sr;
     endr = er;
@@ -20,6 +21,10 @@ Move::Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlin
     pieceMoved = gameState.pieceOnSquare(startr,startc);
     pieceCapture = gameState.pieceOnSquare(endr,endc);
     CastlingMove = isCastlingMove;
+    EnPassantMove = isEnPassantMove;
+    if(isEnPassantMove){
+        pieceCapture = gameState.pieceOnSquare(startr,endc);
+    }
 }
 
 Move::~Move()
