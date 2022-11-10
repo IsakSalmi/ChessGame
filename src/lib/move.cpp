@@ -35,3 +35,13 @@ bool Move::operator==(const Move& move){
     if((move.startc == startc)&&(move.startr == startr)&&(move.endc == endc)&&(move.endr == endr)){return true;}
     else{return false;}
 }
+
+
+
+
+moveStorages::moveStorages(int sr, int sc, int er, int ec){
+    startr = sr;
+    startc = sc;
+    endr = er;
+    endc = ec;
+}

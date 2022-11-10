@@ -8,6 +8,7 @@
 
 using namespace std;
 class Move;
+class moveStorages;
 class ChessEngien{
 private:
     // 0b10000000 = white    0b010000000 = black
@@ -23,6 +24,7 @@ private:
                        {0b10010000, 0b10001000, 0b10000100, 0b10000010, 0b10000001, 0b10000100, 0b10001000, 0b10010000}}; 
     vector<Move> moves;
     vector<Move> moveLogs;
+
     void allPossibleMove();
 
     void getPawnMove(int startr, int startc, int piece);

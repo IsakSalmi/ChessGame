@@ -24,3 +24,12 @@ public:
     bool operator==(const Move& move);
 };
 
+class moveStorages{
+    private: 
+    public:
+        int startr, startc, endr, endc;
+
+        moveStorages(int sr, int sc, int er, int ec);
+        ~moveStorages(){};
+};
+

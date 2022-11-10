@@ -15,12 +15,14 @@ ChessEngien::ChessEngien(){
 
     enPassantPossibleCol = -1;
     enPassantPossibleRow = -1;
+
 }
 
 ChessEngien::~ChessEngien(){
 }
 
 int ChessEngien::pieceOnSquare(int r, int c){return board[r][c];}
+
 
 void ChessEngien::makeMove(Move newMove){
     int movingPiece = board[newMove.startr][newMove.startc];
@@ -69,6 +71,7 @@ void ChessEngien::makeMove(Move newMove){
     updateCastlingRights(newMove);
 
 }
+
 
 void ChessEngien::undoMove(){
     if(moveLogs.size() != 0){
@@ -148,6 +151,7 @@ void ChessEngien::undoMove(){
 }
 
 
+
 void ChessEngien::updateCastlingRights(Move move){
     if(move.pieceMoved == 0b10000001){
         castleRightWKS = false;
@@ -177,7 +181,6 @@ void ChessEngien::updateCastlingRights(Move move){
 
 
 void ChessEngien::allPossibleMove(){
-    moves.clear();
     for(int r = 0; r < BOARD_DIMENTION; r++){
         for(int c = 0; c < BOARD_DIMENTION; c++){
             //white pieces
@@ -240,8 +243,12 @@ void ChessEngien::allPossibleMove(){
 
 
 vector<Move> ChessEngien::getValidMove(){
-    int kingr, kingc;
+    moves.clear();
 
+    allPossibleMove();
+    
+
+    int kingr, kingc;
     if(whiteToMove){
         kingr = wKingLocationR;
         kingc = wKingLocationC;
@@ -251,7 +258,6 @@ vector<Move> ChessEngien::getValidMove(){
         kingc = bKingLocationC;
     }
 
-    allPossibleMove();
     getCastlingMoves(kingr,kingc,board[kingr][kingc]);
 
     return moves;
@@ -259,6 +265,7 @@ vector<Move> ChessEngien::getValidMove(){
 
 
 void ChessEngien::getPawnMove(int startr, int startc, int piece){
+
     if((piece & 0b10000000) && startr != 0){
         if((startr == 6) && (board[startr-2][startc] == 0b00000000)){
             moves.push_back(Move(startr,startc,startr - 2, startc, *this));
@@ -383,6 +390,8 @@ void ChessEngien::getRookMove(int startr, int startc, int piece){
 
 
 void ChessEngien::getBishoppMove(int startr, int startc, int piece){
+
+
     int direction[4][2] = {{-1,1},{-1,-1},{1,1},{1,-1}};
     int endr, endc;
     if(piece & 0b10000000){
