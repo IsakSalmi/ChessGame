@@ -43,6 +43,13 @@ private:
 
     bool isUnderAttck(int r, int c);
 
+    void checkForPinsAndChecks();
+    bool inCheck;
+    vector<moveStorages> pins;
+    vector<moveStorages> checks;
+
+    bool staleMate, checkMate;
+
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);

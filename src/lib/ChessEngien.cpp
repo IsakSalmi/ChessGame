@@ -15,6 +15,10 @@ ChessEngien::ChessEngien(){
 
     enPassantPossibleCol = -1;
     enPassantPossibleRow = -1;
+
+    inCheck = false;
+    checkMate = false;
+    staleMate = false;
 }
 
 ChessEngien::~ChessEngien(){
@@ -244,7 +248,10 @@ void ChessEngien::allPossibleMove(){
 vector<Move> ChessEngien::getValidMove(){
     moves.clear();
 
-    
+    checkForPinsAndChecks();
+
+    vector<Move> newMove;
+    newMove.clear();
 
     int kingr, kingc;
     if(whiteToMove){
@@ -256,13 +263,61 @@ vector<Move> ChessEngien::getValidMove(){
         kingc = bKingLocationC;
     }
 
-    if(!isUnderAttck(kingr,kingc)){
-        allPossibleMove();
+    if(inCheck){
+        if(checks.size()==1){
+            allPossibleMove();
+            newMove = moves;
+            moveStorages check = checks[0];
+            int checkRow = check.startr;
+            int checkCol = check.startc;
+
+            int piceChecking = board[checkRow][checkCol];
+            vector<pair<int,int>> validSquers;
+            pair<int, int> squer;
+
+            if(piceChecking & 0b00001000){
+                squer.first = checkRow;
+                squer.second = checkCol;
+                validSquers.push_back(squer);
+            }
+            else{
+                for(int i=1; i<8; i++){
+                    squer.first = kingr + (check.endr * i);
+                    squer.second = kingc + (check.endc * i);
+                    validSquers.push_back(squer);
+                    if((squer.first == checkRow) && (squer.second == checkCol)){
+                        break;
+                    } 
+                }
+            }
+            moves.clear();
+            for(int i = newMove.size()-1; -1 < i ; i--){
+                if((newMove[i].pieceMoved != 0b01000001 or newMove[i].pieceMoved != 0b10000001)){
+                    for(int z=0; z<validSquers.size(); z++){
+                        if((newMove[i].endr == validSquers[z].first) && (moves[i].endc == validSquers[z].second)){
+                            moves.push_back(newMove[i]);
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            getKingmove(kingr,kingc,this->board[kingr][kingc]);
+        }
     }
     else{
-        cout << "test" << endl;
+        allPossibleMove();
     }
     
+    if(moves.size() == 0){
+        if(inCheck){
+            checkMate = true;
+            cout << "winnn" << endl;
+        }
+        else{
+            staleMate = true;
+        }
+    }
 
     getCastlingMoves(kingr,kingc,board[kingr][kingc]);
 
@@ -285,7 +340,7 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         if(board[startr-1][startc+1] & 0b01000000){
             moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
         }
-        else if(board[startr-1][startc-1] & 0b01000000){
+        if(board[startr-1][startc-1] & 0b01000000){
             moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
         }
 
@@ -309,7 +364,7 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         if(board[startr+1][startc+1] & 0b10000000){
             moves.push_back(Move(startr,startc,startr+1,startc+1,*this));
         }
-        else if(board[startr+1][startc-1] & 0b10000000){
+        if(board[startr+1][startc-1] & 0b10000000){
             moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
         }
 
@@ -456,8 +511,30 @@ void ChessEngien::getKingmove(int startr, int startc, int piece){
     for(int i=0; i<8; i++){
         endr = startr + direction[i][0];
         endc = startc + direction[i][1];
-        if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION) && !(board[endr][endc] & team)){
-            moves.push_back(Move(startr,startc,endr,endc,*this));
+        if((0 >= endr && endr < BOARD_DIMENTION) && (0 >= endc && endc< BOARD_DIMENTION) && !(board[endr][endc] & team)){
+            if(team == 0b10000000){
+                wKingLocationR = endr;
+                wKingLocationC = endc;
+            }
+            if(team == 0b01000000){
+                bKingLocationR = endr;
+                bKingLocationC = endc;
+            }
+
+            checkForPinsAndChecks();
+            if(!inCheck){
+                moves.push_back(Move(startr,startc,endc,endr,*this));
+            }
+            
+            if(team == 0b10000000){
+                wKingLocationR = startr;
+                wKingLocationC = startc;
+            }
+            if(team == 0b01000000){
+                bKingLocationR = startr;
+                bKingLocationC = startc;
+            }
+
         }
     }
 }
@@ -529,6 +606,92 @@ bool ChessEngien::isUnderAttck(int r, int c){
     }
 
     return false;
+}
+
+void ChessEngien::checkForPinsAndChecks(){
+
+    pins.clear();
+    checks.clear();
+    inCheck = false;
+
+    int allayColor, enemyColor, startRow, startCol;
+    int endRow, endCol;
+    vector<moveStorages> possinlePins;
+    if(whiteToMove){
+        startRow = wKingLocationR;
+        startCol = wKingLocationC;
+        allayColor = 0b10000000;
+        enemyColor = 0b01000000;
+    }
+    else{
+        startRow = bKingLocationR;
+        startCol = bKingLocationC;
+        allayColor = 0b01000000;
+        enemyColor = 0b10000000;
+    }
+
+    int directions[8][2] = {{-1,0},{0,-1},{1,0},{0,1},{-1,-1},{-1,1},{1,-1},{1,1}};
+    for(int j=0; j<8; j++){
+        int d[2];
+        d[0] = directions[j][0];
+        d[1] = directions[j][1];
+        possinlePins.clear();
+        for(int i=1; i<8; i++){
+            endRow = startRow+(d[0] * i);
+            endCol = startCol+(d[1] * i);
+            if((0 <= endRow && endRow < 8) && (0 <= endCol && endCol < 8)){
+                int endPiece = board[endRow][endCol];
+
+                if((endPiece & allayColor) && (endPiece-allayColor != 0b00000001)){
+                    if(possinlePins.empty()){
+                        possinlePins.push_back(moveStorages(endRow,endCol,d[0],d[1]));
+                    }
+                    else{
+                        break;
+                    }
+                }
+                else if(endPiece & enemyColor){
+                    int pieceType = endPiece - enemyColor;
+                    if(((0 <=j && j <= 3) and (pieceType == 0b00010000)) or
+                        ((4 <= j && j <= 7) and (pieceType == 0b00000100)) or
+                        ((i == 1 && pieceType == 0b00100000) and ((enemyColor == 0b10000000 && 6 <= j && j <= 7) or (enemyColor == 0b01000000 && 4 <= j && j <= 5)))or
+                        (pieceType == 0b00000010) or
+                        (i == 1 and pieceType == 0b00000001)){
+                        if(possinlePins.empty()){
+                            inCheck = true;
+                            checks.push_back(moveStorages(endRow,endCol,d[0],d[1]));
+                            break;
+                        }
+                        else{
+                            for(int z=0; z<possinlePins.size(); z++){
+                                pins.push_back(possinlePins[i]);
+                            }
+                            break;
+                        }
+                    }
+                    else{
+                        break;
+                    }
+                }
+            }
+            else{
+                break;
+            }
+        }
+    }
+
+    int knightMoves[8][2] = {{-1,-2},{-2,-1},{1,-2},{2,-1},{1,2},{2,1},{-1,2},{-2,1}};
+    for(int m=0; m<8; m++){
+        endRow = startRow+knightMoves[m][0];
+        endCol = startCol+knightMoves[m][1];
+        if((0<= endRow && endRow <= 7) and (0<=endCol && endCol<=7)){
+            int endPiece = board[endRow][endCol];
+            if((endPiece & enemyColor)&&(endPiece - enemyColor == 0b00001000)){
+                inCheck = true;
+                checks.push_back(moveStorages(endRow,endCol,knightMoves[m][0],knightMoves[m][1]));
+            }
+        }
+    }
 }
 
 
