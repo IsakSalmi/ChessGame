@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include "ChessEngine.hpp"
 
 class ChessEngien;

@@ -8,6 +8,9 @@ game::game(){
     SDL_SetRenderDrawBlendMode(rendere,SDL_BLENDMODE_BLEND);
     run = true;
     chessEngien = new ChessEngien;
+    chessAI = new ChessAI;
+    playerOne = PLAYER_ONE;
+    playerTow = PLAYER_TWO;
 
     wK = IMG_LoadTexture(rendere,"../src/images/wK.png");
     wQ = IMG_LoadTexture(rendere,"../src/images/wQ.png");
@@ -51,6 +54,7 @@ void game::startGame(){
     bool firstClick = true;
     bool moveMade = false;
     bool gameOver = false;
+    bool humanTurn;
     int selectedSQr, selectedSQc = -1;
     vector<Move> validMoves = chessEngien->getValidMove();
 
@@ -60,6 +64,10 @@ void game::startGame(){
 
 
     while(run){
+
+        if((chessEngien->whiteToMove and playerOne) or (!(chessEngien->whiteToMove) and playerTow)){humanTurn = true;}
+        else{humanTurn = false;}
+
         int startLoop = SDL_GetTicks();  //for fps
         while(SDL_PollEvent(&windowEvent)){
             switch(windowEvent.type){
@@ -68,7 +76,7 @@ void game::startGame(){
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    if(!gameOver){
+                    if(!gameOver and humanTurn){
                         if(firstClick){
                                 int sc = windowEvent.button.x;
                                 int sr = windowEvent.button.y;
@@ -112,6 +120,7 @@ void game::startGame(){
                             firstClick = true;
                         }
                     }
+
                 case SDL_KEYDOWN:
                     if(windowEvent.key.keysym.sym == SDLK_z){
                         chessEngien->undoMove();
@@ -124,8 +133,15 @@ void game::startGame(){
             }
         }
 
+        if(!gameOver && !humanTurn){
+            Move AIMove = chessAI->findRandomMove(validMoves);
+            cout << AIMove.endr << AIMove.endc << endl;
+            chessEngien->makeMove(AIMove);
+            moveMade = true;
+        }
+
         if(moveMade){
-                validMoves.clear();
+                validMoves.clear(); 
                 validMoves = chessEngien->getValidMove();
                 moveMade = false;
             }

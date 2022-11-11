@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <iostream>
+#include <vector>
 #include "move.hpp"
 #include "Config.hpp"
 #include <math.h>

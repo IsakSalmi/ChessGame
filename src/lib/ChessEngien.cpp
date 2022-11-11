@@ -293,11 +293,10 @@ vector<Move> ChessEngien::getValidMove(){
             }
             moves.clear();
             for(int i = newMove.size()-1; -1 < i ; i--){
-                if((newMove[i].pieceMoved != 0b01000001 or newMove[i].pieceMoved != 0b10000001)){
-                    for(int z=0; z<validSquers.size(); z++){
-                        if((newMove[i].endr == validSquers[z].first) && (moves[i].endc == validSquers[z].second)){
-                            moves.push_back(newMove[i]);
-                        }
+                for(int z=0; z<validSquers.size(); z++){
+                    if((newMove[i].endr == validSquers[z].first) && (moves[i].endc == validSquers[z].second) or 
+                    ((newMove[i].pieceMoved == 0b01000001 or newMove[i].pieceMoved == 0b10000001))){
+                        moves.push_back(newMove[i]);
                     }
                 }
             }
@@ -351,66 +350,85 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
             }
         }
 
-
-        if(board[startr-1][startc+1] & 0b01000000){
-            moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
+        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == 1)){
+            if(board[startr-1][startc+1] & 0b01000000){
+                moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
+            }
+            if((startr-1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
+                moves.push_back(Move(startr, startc, startr-1, startc+1, *this, false, true));
+            }
         }
-        if(board[startr-1][startc-1] & 0b01000000){
-            moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
-        }
 
-
-        if((startr-1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
-            moves.push_back(Move(startr, startc, startr -1, startc -1, *this, false, true));
-        }
-        if((startr-1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
-            moves.push_back(Move(startr, startc, startr-1, startc+1, *this, false, true));
+        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == -1)){
+            if(board[startr-1][startc-1] & 0b01000000){
+                moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
+            }
+            if((startr-1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
+                moves.push_back(Move(startr, startc, startr -1, startc -1, *this, false, true));
+            }
         }
     }
     else if((piece & 0b01000000) && startr != 7){
-        if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
-            moves.push_back(Move(startr,startc,startr + 2, startc, *this));
-        }
-        if(board[startr+1][startc] == 0b00000000){
-            moves.push_back(Move(startr,startc,startr + 1, startc, *this));
-        }
-
-
-        if(board[startr+1][startc+1] & 0b10000000){
-            moves.push_back(Move(startr,startc,startr+1,startc+1,*this));
-        }
-        if(board[startr+1][startc-1] & 0b10000000){
-            moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
+        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
+            if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
+                moves.push_back(Move(startr,startc,startr + 2, startc, *this));
+            }
+            if(board[startr+1][startc] == 0b00000000){
+                moves.push_back(Move(startr,startc,startr + 1, startc, *this));
+            }
         }
 
-        if((startr+1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
-            moves.push_back(Move(startr, startc, startr+1, startc -1, *this, false, true));
+        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
+            if(board[startr+1][startc+1] & 0b10000000){
+                moves.push_back(Move(startr,startc,startr+1,startc+1,*this));
+            }
+            if((startr+1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
+                moves.push_back(Move(startr, startc, startr+1, startc+1, *this, false, true));
+            }
         }
-        if((startr+1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
-            moves.push_back(Move(startr, startc, startr+1, startc+1, *this, false, true));
+        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
+            if(board[startr+1][startc-1] & 0b10000000){
+                moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
+            }
+            if((startr+1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
+                moves.push_back(Move(startr, startc, startr+1, startc -1, *this, false, true));
+            }
         }
     }
 }
 
 
 void ChessEngien::getKnightMove(int startr, int startc, int piece){
-    int direction[8][2] = {{-1,-2},{-2,-1},{1,-2},{2,-1},{1,2},{2,1},{-1,2},{-2,1}};
-    int endr, endc;
-    if(piece & 0b10000000){
-        for(int d = 0; d < 8;d++){
-            endr = startr + direction[d][0];
-            endc = startc + direction[d][1];
-            if((0 >= endr < BOARD_DIMENTION) && (0 >= endr < BOARD_DIMENTION) && !(board[endr][endc] & 0b10000000)){
-                moves.push_back(Move(startr,startc,endr,endc,*this));
-            }
+
+    bool picePinned = false;
+    pair<int,int> pinDirection;
+    for(int i=0; i<pins.size(); i++){
+        if(pins[i].startr == startr && pins[i].startc == startc){
+            picePinned = true;
+            pins.erase(pins.begin()+i);
+            break;
         }
     }
-    else{
-        for(int d = 0; d < 8;d++){
-            endr = startr + direction[d][0];
-            endc = startc + direction[d][1];
-            if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION) && !(board[endr][endc] & 0b01000000)){
-                moves.push_back(Move(startr,startc,endr,endc,*this));
+
+    if(!picePinned){
+        int direction[8][2] = {{-1,-2},{-2,-1},{1,-2},{2,-1},{1,2},{2,1},{-1,2},{-2,1}};
+        int endr, endc;
+        if(piece & 0b10000000){
+            for(int d = 0; d < 8;d++){
+                endr = startr + direction[d][0];
+                endc = startc + direction[d][1];
+                if((0 <= endr && endr < BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION) && !(board[endr][endc] & 0b10000000)){
+                    moves.push_back(Move(startr,startc,endr,endc,*this));
+                }
+            }
+        }
+        else{
+            for(int d = 0; d < 8;d++){
+                endr = startr + direction[d][0];
+                endc = startc + direction[d][1];
+                if((0 <= endr && endr < BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION) && !(board[endr][endc] & 0b01000000)){
+                    moves.push_back(Move(startr,startc,endr,endc,*this));
+                }
             }
         }
     }
@@ -418,6 +436,21 @@ void ChessEngien::getKnightMove(int startr, int startc, int piece){
 
 
 void ChessEngien::getRookMove(int startr, int startc, int piece){
+
+    bool picePinned = false;
+    pair<int,int> pinDirection;
+    for(int i=0; i<pins.size(); i++){
+        if(pins[i].startr == startr && pins[i].startc == startc){
+            picePinned = true;
+            pinDirection.first = pins[i].endr;
+            pinDirection.second = pins[i].endc;
+            if((board[pins[i].endr][pins[i].endc] & 0b00000010)){
+                pins.erase(pins.begin()+i);
+            }
+            break;
+        }
+    }
+
     int direction[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
     int endr, endc;
     if(piece & 0b10000000){
@@ -425,16 +458,19 @@ void ChessEngien::getRookMove(int startr, int startc, int piece){
             for(int z =1 ; z < 8; z++){
                 endr = startr + (direction[i][0] * z);
                 endc = startc + (direction[i][1] * z);
-                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
-                    if(board[endr][endc] == 0b00000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
-                    }
-                    else if(board[endr][endc] & 0b01000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
-                        break;
-                    }
-                    else{
-                        break;
+                if((0 <= endr && endr< BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION)){
+                    if(!picePinned or (pinDirection.first == direction[i][0] && pinDirection.second == direction[i][1]) or 
+                        (pinDirection.first == -direction[i][0] && pinDirection.second == -direction[i][1])){
+                        if(board[endr][endc] == 0b00000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                        }
+                        else if(board[endr][endc] & 0b01000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                            break;
+                        }
+                        else{
+                            break;
+                        }
                     }
                 }
                 else{
@@ -448,15 +484,18 @@ void ChessEngien::getRookMove(int startr, int startc, int piece){
             for(int z =1 ; z < 8; z++){
                 endr = startr + (direction[i][0] * z);
                 endc = startc + (direction[i][1] * z);
-                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
-                    if(board[endr][endc] == 0b00000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                if((0 <= endr && endr < BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION)){
+                    if(!picePinned or (pinDirection.first == direction[i][0] && pinDirection.second == direction[i][1]) or 
+                        (pinDirection.first == -direction[i][0] && pinDirection.second == -direction[i][1])){
+                        if(board[endr][endc] == 0b00000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                        }
+                        else if(board[endr][endc] & 0b10000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                            break;
+                        }
+                        else{break;}
                     }
-                    else if(board[endr][endc] & 0b10000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
-                        break;
-                    }
-                    else{break;}
                 }
                 else{break;}
             }
@@ -467,6 +506,18 @@ void ChessEngien::getRookMove(int startr, int startc, int piece){
 
 void ChessEngien::getBishoppMove(int startr, int startc, int piece){
 
+    bool picePinned = false;
+    pair<int,int> pinDirection;
+    for(int i=0; i<pins.size(); i++){
+        if(pins[i].startr == startr && pins[i].startc == startc){
+            picePinned = true;
+            pinDirection.first = pins[i].endr;
+            pinDirection.second = pins[i].endc;
+            pins.erase(pins.begin()+i);
+            break;
+        }
+    }
+
 
     int direction[4][2] = {{-1,1},{-1,-1},{1,1},{1,-1}};
     int endr, endc;
@@ -475,15 +526,18 @@ void ChessEngien::getBishoppMove(int startr, int startc, int piece){
             for(int z =1 ; z < 8; z++){
                 endr = startr + (direction[i][0] * z);
                 endc = startc + (direction[i][1] * z);
-                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
-                    if(board[endr][endc] == 0b00000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                if((0 <= endr && endr< BOARD_DIMENTION) && (0 <= endc && endc  < BOARD_DIMENTION)){
+                    if(!picePinned or (pinDirection.first == direction[i][0] && pinDirection.second == direction[i][1]) or 
+                        (pinDirection.first == -direction[i][0] && pinDirection.second == -direction[i][1])){
+                        if(board[endr][endc] == 0b00000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                        }
+                        else if(board[endr][endc] & 0b01000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                            break;
+                        }
+                        else{break;}
                     }
-                    else if(board[endr][endc] & 0b01000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
-                        break;
-                    }
-                    else{break;}
                 }
                 else{break;}
             }
@@ -494,15 +548,18 @@ void ChessEngien::getBishoppMove(int startr, int startc, int piece){
             for(int z =1 ; z < 8; z++){
                 endr = startr + (direction[i][0] * z);
                 endc = startc + (direction[i][1] * z);
-                if((0 >= endr < BOARD_DIMENTION) && (0 >= endc < BOARD_DIMENTION)){
-                    if(board[endr][endc] == 0b00000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
+                if((0 <= endr && endr< BOARD_DIMENTION) && (0 <= endc && endc< BOARD_DIMENTION)){
+                    if(!picePinned or (pinDirection.first == direction[i][0] && pinDirection.second == direction[i][1]) or 
+                        (pinDirection.first == -direction[i][0] && pinDirection.second == -direction[i][1])){
+                        if(board[endr][endc] == 0b00000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                        }
+                        else if(board[endr][endc] & 0b10000000){
+                            moves.push_back(Move(startr,startc,endr,endc,*this));
+                            break;
+                        }
+                        else{break;}
                     }
-                    else if(board[endr][endc] & 0b10000000){
-                        moves.push_back(Move(startr,startc,endr,endc,*this));
-                        break;
-                    }
-                    else{break;}
                 }
                 else{break;}
             }
@@ -525,7 +582,6 @@ void ChessEngien::getKingmove(int startr, int startc, int piece){
     for(int i=0; i<8; i++){
         endr = startr + direction[i][0];
         endc = startc + direction[i][1];
-        cout << "test" << endl;
         if((0 <= endr && endr < BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION) && !(board[endr][endc] & team)){
             if(!(isUnderAttck(endr,endc))){
                 moves.push_back(Move(startr,startc,endr,endc,*this));
