@@ -145,7 +145,8 @@ void ChessEngien::undoMove(){
             board[move.startr][move.endc] = move.pieceCapture;
         }
         
-
+        checkMate = false;
+        staleMate = false;
         whiteToMove = !whiteToMove;
     }
     else{
@@ -327,13 +328,27 @@ vector<Move> ChessEngien::getValidMove(){
 
 void ChessEngien::getPawnMove(int startr, int startc, int piece){
 
-    if((piece & 0b10000000) && startr != 0){
-        if((startr == 6) && (board[startr-2][startc] == 0b00000000)){
-            moves.push_back(Move(startr,startc,startr - 2, startc, *this));
+    bool picePinned = false;
+    pair<int,int> pinDirection;
+    for(int i=0; i<pins.size(); i++){
+        if(pins[i].startr == startr && pins[i].startc == startc){
+            picePinned = true;
+            pinDirection.first = pins[i].endr;
+            pinDirection.second = pins[i].endc;
+            pins.erase(pins.begin()+i);
+            break;
         }
+    }
 
-        if(board[startr-1][startc] == 0b00000000){
-            moves.push_back(Move(startr,startc,startr - 1, startc, *this));
+    if((piece & 0b10000000) && startr != 0){
+        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == 0)){
+            if((startr == 6) && (board[startr-2][startc] == 0b00000000)){
+                moves.push_back(Move(startr,startc,startr - 2, startc, *this));
+            }
+
+            if(board[startr-1][startc] == 0b00000000){
+                moves.push_back(Move(startr,startc,startr - 1, startc, *this));
+            }
         }
 
 
@@ -507,34 +522,14 @@ void ChessEngien::getKingmove(int startr, int startc, int piece){
     int endr, endc, team;
     if(piece & 0b10000000){team = 0b10000000;}
     else{team = 0b01000000;}
-
     for(int i=0; i<8; i++){
         endr = startr + direction[i][0];
         endc = startc + direction[i][1];
-        if((0 >= endr && endr < BOARD_DIMENTION) && (0 >= endc && endc< BOARD_DIMENTION) && !(board[endr][endc] & team)){
-            if(team == 0b10000000){
-                wKingLocationR = endr;
-                wKingLocationC = endc;
+        cout << "test" << endl;
+        if((0 <= endr && endr < BOARD_DIMENTION) && (0 <= endc && endc < BOARD_DIMENTION) && !(board[endr][endc] & team)){
+            if(!(isUnderAttck(endr,endc))){
+                moves.push_back(Move(startr,startc,endr,endc,*this));
             }
-            if(team == 0b01000000){
-                bKingLocationR = endr;
-                bKingLocationC = endc;
-            }
-
-            checkForPinsAndChecks();
-            if(!inCheck){
-                moves.push_back(Move(startr,startc,endc,endr,*this));
-            }
-            
-            if(team == 0b10000000){
-                wKingLocationR = startr;
-                wKingLocationC = startc;
-            }
-            if(team == 0b01000000){
-                bKingLocationR = startr;
-                bKingLocationC = startc;
-            }
-
         }
     }
 }
@@ -617,6 +612,7 @@ void ChessEngien::checkForPinsAndChecks(){
     int allayColor, enemyColor, startRow, startCol;
     int endRow, endCol;
     vector<moveStorages> possinlePins;
+
     if(whiteToMove){
         startRow = wKingLocationR;
         startCol = wKingLocationC;
@@ -641,7 +637,6 @@ void ChessEngien::checkForPinsAndChecks(){
             endCol = startCol+(d[1] * i);
             if((0 <= endRow && endRow < 8) && (0 <= endCol && endCol < 8)){
                 int endPiece = board[endRow][endCol];
-
                 if((endPiece & allayColor) && (endPiece-allayColor != 0b00000001)){
                     if(possinlePins.empty()){
                         possinlePins.push_back(moveStorages(endRow,endCol,d[0],d[1]));
@@ -663,9 +658,7 @@ void ChessEngien::checkForPinsAndChecks(){
                             break;
                         }
                         else{
-                            for(int z=0; z<possinlePins.size(); z++){
-                                pins.push_back(possinlePins[i]);
-                            }
+                            pins.push_back(possinlePins[0]);
                             break;
                         }
                     }

@@ -50,6 +50,7 @@ void game::startGame(){
 
     bool firstClick = true;
     bool moveMade = false;
+    bool gameOver = false;
     int selectedSQr, selectedSQc = -1;
     vector<Move> validMoves = chessEngien->getValidMove();
 
@@ -67,52 +68,55 @@ void game::startGame(){
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    if(firstClick){
-                        int sc = windowEvent.button.x;
-                        int sr = windowEvent.button.y;
+                    if(!gameOver){
+                        if(firstClick){
+                                int sc = windowEvent.button.x;
+                                int sr = windowEvent.button.y;
 
-                        startc = sc/SQ_size;
-                        startr = sr/SQ_size;
+                                startc = sc/SQ_size;
+                                startr = sr/SQ_size;
 
-                        if((chessEngien->pieceOnSquare(startr,startc)&0b10000000) && chessEngien->whiteToMove){
-                            selectedSQr = startr;
-                            selectedSQc = startc;
-                            firstClick = false;
-                        }
-                        else if((chessEngien->pieceOnSquare(startr,startc)&0b01000000) && !chessEngien->whiteToMove){
-                            selectedSQr = startr;
-                            selectedSQc = startc;
-                            firstClick = false;
-                        }
-                    }
-                    else if(!firstClick){
-                        int ec = windowEvent.button.x;
-                        int er = windowEvent.button.y;
-
-                        endc = ec/SQ_size;
-                        endr = er/SQ_size;
-
-
-                        Move newMove = Move(startr,startc,endr,endc,*chessEngien);
-
-                        //diselect the squre;
-                        selectedSQc = -1;
-                        selectedSQr = -1;
-
-                        for(int i=0; i < validMoves.size();i++){
-                            if(newMove == validMoves[i]){
-                                chessEngien->makeMove(validMoves[i]);
-                                moveMade = true;
-                                break;
+                                if((chessEngien->pieceOnSquare(startr,startc)&0b10000000) && chessEngien->whiteToMove){
+                                    selectedSQr = startr;
+                                    selectedSQc = startc;
+                                    firstClick = false;
+                                }
+                                else if((chessEngien->pieceOnSquare(startr,startc)&0b01000000) && !chessEngien->whiteToMove){
+                                    selectedSQr = startr;
+                                    selectedSQc = startc;
+                                    firstClick = false;
+                                }
                             }
-                        }
+                        else if(!firstClick){
+                            int ec = windowEvent.button.x;
+                            int er = windowEvent.button.y;
 
-                        firstClick = true;
+                            endc = ec/SQ_size;
+                            endr = er/SQ_size;
+
+
+                            Move newMove = Move(startr,startc,endr,endc,*chessEngien);
+
+                            //diselect the squre;
+                            selectedSQc = -1;
+                            selectedSQr = -1;
+
+                            for(int i=0; i < validMoves.size();i++){
+                                if(newMove == validMoves[i]){
+                                    chessEngien->makeMove(validMoves[i]);
+                                    moveMade = true;
+                                    break;
+                                }
+                            }
+
+                            firstClick = true;
+                        }
                     }
                 case SDL_KEYDOWN:
                     if(windowEvent.key.keysym.sym == SDLK_z){
                         chessEngien->undoMove();
                         moveMade = true;
+                        gameOver = false;
                     }
                     break;
                 default:
@@ -125,6 +129,20 @@ void game::startGame(){
                 validMoves = chessEngien->getValidMove();
                 moveMade = false;
             }
+
+        if(chessEngien->checkMate && !gameOver){
+            gameOver = true;
+            if(chessEngien->whiteToMove){
+                cout << "black Won by Checkmate!"<< endl;
+            }
+            else{
+                cout << "white won bu Checkmate!" << endl;
+            }
+        }
+        if(chessEngien->staleMate && !gameOver){
+            gameOver = true;
+            cout << "Draw due to stalemate!" << endl;
+        }
 
         drawEverything(selectedSQr,selectedSQc, validMoves);
 

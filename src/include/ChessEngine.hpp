@@ -48,9 +48,9 @@ private:
     vector<moveStorages> pins;
     vector<moveStorages> checks;
 
-    bool staleMate, checkMate;
 
 public:
+    bool staleMate, checkMate;
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);
     void undoMove();
