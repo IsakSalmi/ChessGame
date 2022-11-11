@@ -41,6 +41,8 @@ private:
     int wKingLocationR, wKingLocationC, bKingLocationR, bKingLocationC;
     int enPassantPossibleRow, enPassantPossibleCol;
 
+    bool isUnderAttck(int r, int c);
+
 public:
     int pieceOnSquare(int r, int c);
     void makeMove(Move newMove);

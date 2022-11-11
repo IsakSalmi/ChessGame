@@ -15,7 +15,6 @@ ChessEngien::ChessEngien(){
 
     enPassantPossibleCol = -1;
     enPassantPossibleRow = -1;
-
 }
 
 ChessEngien::~ChessEngien(){
@@ -245,7 +244,6 @@ void ChessEngien::allPossibleMove(){
 vector<Move> ChessEngien::getValidMove(){
     moves.clear();
 
-    allPossibleMove();
     
 
     int kingr, kingc;
@@ -257,6 +255,14 @@ vector<Move> ChessEngien::getValidMove(){
         kingr = bKingLocationR;
         kingc = bKingLocationC;
     }
+
+    if(!isUnderAttck(kingr,kingc)){
+        allPossibleMove();
+    }
+    else{
+        cout << "test" << endl;
+    }
+    
 
     getCastlingMoves(kingr,kingc,board[kingr][kingc]);
 
@@ -471,6 +477,59 @@ void ChessEngien::getCastlingMoves(int startr, int startc, int piece){
 }
 
 
+bool ChessEngien::isUnderAttck(int r, int c){
+    int allayColor, enemyColor;
+    int endRow, endCol;
+    if(whiteToMove){allayColor = 0b10000000; enemyColor = 0b01000000;}
+    else{allayColor = 0b01000000; enemyColor = 0b10000000;}
+
+    int directions[8][2] = {{-1,0},{0,-1},{1,0},{0,1},{-1,-1},{-1,1},{1,-1},{1,1}};
+    for(int j=0; j<8; j++){
+        int d[2];
+        d[0] = directions[j][0];
+        d[1] = directions[j][1];
+        for(int i=1; i<8; i++){
+            endRow = r+(d[0] * i);
+            endCol = c+(d[1] * i);
+            if((0 <= endRow && endRow < 8) && (0 <= endCol && endCol < 8)){
+                int endPiece = board[endRow][endCol];
+                if(endPiece & allayColor){
+                    break;
+                }
+                else if(endPiece & enemyColor){
+                    int pieceType = endPiece - enemyColor;
+                    if(((0<=j && j<=3) and (pieceType == 0b00010000)) or
+                        ((4 <= j && j <= 7) and (pieceType == 0b00000100)) or
+                        ((i == 1 && pieceType == 0b00100000) and ((enemyColor == 0b10000000 && 6 <= j && j <= 7) or (enemyColor == 0b01000000 && 4 <= j && j <= 5)))or
+                        (pieceType == 0b00000010) or
+                        (i == 1 and pieceType == 0b00000001)){
+                        return true;
+                    }
+                    else{
+                        break;
+                    }
+                }
+            }
+            else{
+                break;
+            }
+        }
+    }
+
+    int knightMoves[8][2] = {{-1,-2},{-2,-1},{1,-2},{2,-1},{1,2},{2,1},{-1,2},{-2,1}};
+    for(int m=0; m<8; m++){
+        endRow = r+knightMoves[m][0];
+        endCol = c+knightMoves[m][1];
+        if((0<= endRow && endRow <= 7) and (0<=endCol && endCol<=7)){
+            int endPiece = board[endRow][endCol];
+            if((endPiece & enemyColor)&&(endPiece - enemyColor == 0b00001000)){
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 
 
