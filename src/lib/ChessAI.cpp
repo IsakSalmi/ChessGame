@@ -14,15 +14,16 @@ Move ChessAI::findRandomMove(vector<Move> validMove){
 Move ChessAI::findeBestMove(ChessEngien gs, vector<Move> validMoves){
     nextMove = Move(-1,-1,-1,-1, gs);
     int turnMultiplyer;
+    shuffle(validMoves.begin(), validMoves.end(),default_random_engine());
     if(gs.whiteToMove){turnMultiplyer = 1;}
     else{turnMultiplyer = -1;}
 
-    findMoveMinMax(gs,validMoves,DEPTH,gs.whiteToMove,-checMate, checMate);
+    findMoveMinMaxAlphaBeta(gs,validMoves,DEPTH,gs.whiteToMove,-checMate, checMate);
 
     return nextMove;
 }
 
-int ChessAI::findMoveMinMax(ChessEngien gs, vector<Move> validMoves, int depth ,bool whiteToMove, int alpha, int beta){
+int ChessAI::findMoveMinMaxAlphaBeta(ChessEngien gs, vector<Move> validMoves, int depth ,bool whiteToMove, int alpha, int beta){
     int score;
     if(depth == 0){
         return scoreBoard(gs);
@@ -32,7 +33,7 @@ int ChessAI::findMoveMinMax(ChessEngien gs, vector<Move> validMoves, int depth ,
         for(int i=0; i<validMoves.size();i++){
             gs.makeMove(validMoves[i]);
             vector<Move> nextMoves = gs.getValidMove();
-            score = findMoveMinMax(gs,nextMoves,depth-1,false,alpha,beta);
+            score = findMoveMinMaxAlphaBeta(gs,nextMoves,depth-1,false,alpha,beta);
             if(score > maxScore){
                 maxScore = score;
                 if(depth == DEPTH){
@@ -52,7 +53,7 @@ int ChessAI::findMoveMinMax(ChessEngien gs, vector<Move> validMoves, int depth ,
         for(int i=0; i<validMoves.size(); i++){
             gs.makeMove(validMoves[i]);
             vector<Move> nextMoves = gs.getValidMove();
-            score = findMoveMinMax(gs,nextMoves,depth-1,true,alpha,beta);
+            score = findMoveMinMaxAlphaBeta(gs,nextMoves,depth-1,true,alpha,beta);
             if(score < minScore){
                 minScore = score;
                 if(depth == DEPTH){

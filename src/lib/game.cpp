@@ -137,7 +137,6 @@ void game::startGame(){
             Move AIMove = AI->findeBestMove(*chessEngien, validMoves);
             if(AIMove.startr == -1 && AIMove.startc == -1){
                 AIMove = AI->findRandomMove(validMoves);
-                cout << "test" << endl;
             }
             chessEngien->makeMove(AIMove);
             moveMade = true;

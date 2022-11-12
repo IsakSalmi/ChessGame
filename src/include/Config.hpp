@@ -6,4 +6,4 @@ const int BOARD_DIMENTION = 8;
 const int FPS = 30;
 const bool PLAYER_ONE = false; 
 const bool PLAYER_TWO = false;
-const int DEPTH = 5;
+const int DEPTH = 2;
