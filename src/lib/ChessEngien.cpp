@@ -69,7 +69,7 @@ void ChessEngien::makeMove(Move newMove){
 
     if((newMove.pieceMoved & 0b00100000) && (abs(newMove.endr - newMove.startr) == 2)){
         enPassantPossibleRow = floor((newMove.startr + newMove.endr) / 2);
-        enPassantPossibleCol = newMove.endc; 
+        enPassantPossibleCol = newMove.endc;
     }
     else{
         enPassantPossibleCol = -1;
@@ -346,6 +346,7 @@ vector<Move> ChessEngien::getValidMove(){
 
 
 void ChessEngien::getPawnMove(int startr, int startc, int piece){
+    int moveAmount, startRow, enemyColor;
 
     bool picePinned = false;
     pair<int,int> pinDirection;
@@ -359,62 +360,47 @@ void ChessEngien::getPawnMove(int startr, int startc, int piece){
         }
     }
 
-    if((piece & 0b10000000) && startr != 0){
-        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == 0)){
-            if((startr == 6) && (board[startr-2][startc] == 0b00000000)){
-                moves.push_back(Move(startr,startc,startr - 2, startc, *this));
-            }
-
-            if(board[startr-1][startc] == 0b00000000){
-                moves.push_back(Move(startr,startc,startr - 1, startc, *this));
-            }
-        }
-
-        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == 1)){
-            if(board[startr-1][startc+1] & 0b01000000){
-                moves.push_back(Move(startr,startc,startr-1,startc+1,*this));
-            }
-            if((startr-1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
-                moves.push_back(Move(startr, startc, startr-1, startc+1, *this, false, true));
-            }
-        }
-
-        if(!picePinned or (pinDirection.first == -1 && pinDirection.second == -1)){
-            if(board[startr-1][startc-1] & 0b01000000){
-                moves.push_back(Move(startr,startc,startr-1,startc-1,*this));
-            }
-            if((startr-1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
-                moves.push_back(Move(startr, startc, startr -1, startc -1, *this, false, true));
+    if(whiteToMove){
+        moveAmount = -1;
+        startRow = 6;
+        enemyColor = 0b01000000;
+    }
+    else{
+        moveAmount = 1;
+        startRow = 1;
+        enemyColor = 0b10000000;
+    }
+    if(board[startr+moveAmount][startc] == 0b00000000){
+        if(!picePinned or (pinDirection.first == moveAmount && pinDirection.second == 0)){
+            moves.push_back(Move(startr,startc,startr+moveAmount,startc,*this));
+            if((startr == startRow) && (board[startr +(2*moveAmount)][startc] == 0b00000000)){
+                moves.push_back(Move(startr,startc,startr+(2*moveAmount),startc,*this));
             }
         }
     }
-    else if((piece & 0b01000000) && startr != 7){
-        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
-            if((startr == 1)and (board[startr+2][startc] == 0b00000000)){
-                moves.push_back(Move(startr,startc,startr + 2, startc, *this));
-            }
-            if(board[startr+1][startc] == 0b00000000){
-                moves.push_back(Move(startr,startc,startr + 1, startc, *this));
-            }
-        }
 
-        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
-            if(board[startr+1][startc+1] & 0b10000000){
-                moves.push_back(Move(startr,startc,startr+1,startc+1,*this));
+    if(startc - 1 >= 0){
+        if(!picePinned or (pinDirection.first == moveAmount && pinDirection.second == -1)){
+            if(board[startr+moveAmount][startc-1] & enemyColor){
+                moves.push_back(Move(startr,startc,startr+moveAmount,startc-1,*this));
             }
-            if((startr+1 == enPassantPossibleRow) && (startc + 1 == enPassantPossibleCol)){
-                moves.push_back(Move(startr, startc, startr+1, startc+1, *this, false, true));
-            }
-        }
-        if(!picePinned or (pinDirection.first == 1 && pinDirection.second == 0)){
-            if(board[startr+1][startc-1] & 0b10000000){
-                moves.push_back(Move(startr,startc,startr+1,startc-1,*this));
-            }
-            if((startr+1 == enPassantPossibleRow) && (startc - 1 == enPassantPossibleCol)){
-                moves.push_back(Move(startr, startc, startr+1, startc -1, *this, false, true));
+            if(startr+moveAmount == enPassantPossibleRow && startc-1 == enPassantPossibleCol){
+                moves.push_back(Move(startr,startc,startr+moveAmount,startc-1,*this,false,true));
             }
         }
     }
+
+    if(startc + 1 < 8){
+        if(!picePinned or (pinDirection.first == moveAmount && pinDirection.second == 1)){
+            if(board[startr+moveAmount][startc+1] & enemyColor){
+                moves.push_back(Move(startr,startc,startr+moveAmount,startc+1,*this));
+            }
+            if(startr+moveAmount == enPassantPossibleRow && startc+1 == enPassantPossibleCol){
+                moves.push_back(Move(startr,startc,startr+moveAmount,startc+1,*this,false,true));
+            }
+        }
+    }
+    
 }
 
 

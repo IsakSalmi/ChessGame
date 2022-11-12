@@ -3,6 +3,7 @@
 ChessAI::ChessAI(){
     checMate = 10000;
     staleMate = 0;
+
 }
 
 Move ChessAI::findRandomMove(vector<Move> validMove){
@@ -85,6 +86,7 @@ int ChessAI::scoreBoard(ChessEngien gs){
     else if(gs.staleMate){
         return staleMate;
     }
+    int piceInfluence = 5;
     int score = 0;
     for(int r=0; r<8; r++){
         for(int c=0; c<8; c++){
@@ -94,19 +96,24 @@ int ChessAI::scoreBoard(ChessEngien gs){
                     switch (square - 0b10000000)
                     {
                     case 0b00100000:
-                        score += 1;
+                        score += (1 * piceInfluence);
+                        score += whitePawnScore[r][c];
                         break;
                     case 0b00010000:
-                        score += 5;
+                        score += (5 * piceInfluence);
+                        score += rookScore[r][c];
                         break;
                     case 0b00001000:
-                        score += 3;
+                        score += (3 * piceInfluence);
+                        score += knightScore[r][c];
                         break;
                     case 0b00000100:
-                        score += 3;
+                        score += (3 * piceInfluence);
+                        score += bishopScore[r][c];
                         break;
                     case 0b00000010:
-                        score += 10;
+                        score += (10 * piceInfluence);
+                        score += queenScore[r][c];
                         break;
                     default:
                         break;
@@ -116,19 +123,24 @@ int ChessAI::scoreBoard(ChessEngien gs){
                     switch (square - 0b01000000)
                     {
                     case 0b00100000:
-                        score -= 1;
+                        score -= (1*piceInfluence);
+                        score -= blackPawnScore[r][c];
                         break;
                     case 0b00010000:
-                        score -= 5;
+                        score -= (5*piceInfluence);
+                        score -= rookScore[r][c];
                         break;
                     case 0b00001000:
-                        score -= 3;
+                        score -= (3*piceInfluence);
+                        score -= knightScore[r][c];
                         break;
                     case 0b00000100:
-                        score -= 3;
+                        score -= (3*piceInfluence);
+                        score -= bishopScore[r][c];
                         break;
                     case 0b00000010:
-                        score -= 10;
+                        score -= (10*piceInfluence);
+                        score -= queenScore[r][c];
                         break;
                     default:
                         break;
