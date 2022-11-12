@@ -333,7 +333,6 @@ vector<Move> ChessEngien::getValidMove(){
     if(moves.size() == 0){
         if(inCheck){
             checkMate = true;
-            cout << "winnn" << endl;
         }
         else{
             staleMate = true;

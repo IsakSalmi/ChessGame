@@ -17,39 +17,57 @@ Move ChessAI::findeBestMove(ChessEngien gs, vector<Move> validMoves){
     if(gs.whiteToMove){turnMultiplyer = 1;}
     else{turnMultiplyer = -1;}
 
-    findMoveNegaMaxAlphaBeta(gs,validMoves,DEPTH,-1*checMate,checMate,turnMultiplyer);
+    findMoveMinMax(gs,validMoves,DEPTH,gs.whiteToMove,-checMate, checMate);
 
     return nextMove;
 }
 
-int ChessAI::findMoveNegaMaxAlphaBeta(ChessEngien gs, vector<Move> validMoves, int depth, int alpha, int beta, int turnMultiplier){
+int ChessAI::findMoveMinMax(ChessEngien gs, vector<Move> validMoves, int depth ,bool whiteToMove, int alpha, int beta){
+    int score;
     if(depth == 0){
-        return turnMultiplier * scoreBoard(gs);
+        return scoreBoard(gs);
     }
-
-    int maxScore = -checMate;
-    for(int i=0; i<validMoves.size(); i++){
-        vector<Move> NextMoves = gs.getValidMove();
-        gs.makeMove(validMoves[i]);
-        int score = -1*findMoveNegaMaxAlphaBeta(gs,NextMoves,depth-1, -1 * beta, -1 * alpha, -1 * turnMultiplier);
-        if(score > maxScore){
-            maxScore = score;
-            if(depth == DEPTH){
-                nextMove = NextMoves[i];
-                cout << score << endl;
-                cout << " " << endl;
+    if(whiteToMove){
+        int maxScore = -checMate;
+        for(int i=0; i<validMoves.size();i++){
+            gs.makeMove(validMoves[i]);
+            vector<Move> nextMoves = gs.getValidMove();
+            score = findMoveMinMax(gs,nextMoves,depth-1,false,alpha,beta);
+            if(score > maxScore){
+                maxScore = score;
+                if(depth == DEPTH){
+                    nextMove = validMoves[i];
+                }
+            }
+            gs.undoMove();
+            alpha = max(alpha, maxScore);
+            if(beta <= alpha){
+                break;
             }
         }
-        gs.undoMove();
-        if(maxScore > alpha){
-            alpha = maxScore;
-        }
-        if(alpha >= beta){
-            break;
-        }
+        return maxScore;
     }
-    return maxScore;
+    else{
+        int minScore = checMate;
+        for(int i=0; i<validMoves.size(); i++){
+            gs.makeMove(validMoves[i]);
+            vector<Move> nextMoves = gs.getValidMove();
+            score = findMoveMinMax(gs,nextMoves,depth-1,true,alpha,beta);
+            if(score < minScore){
+                minScore = score;
+                if(depth == DEPTH){
+                    nextMove = validMoves[i];
+                }
+            }
+            beta = min(beta, minScore);
+            if(beta <= alpha){
+                break;
+            }
+            gs.undoMove();
 
+        }
+        return minScore;
+    }
 }
 
 
@@ -93,7 +111,7 @@ int ChessAI::scoreBoard(ChessEngien gs){
                         break;
                     }
                 }
-                if(square & 0b01000000){
+                else if(square & 0b01000000){
                     switch (square - 0b01000000)
                     {
                     case 0b00100000:
