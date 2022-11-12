@@ -19,6 +19,7 @@ ChessEngien::ChessEngien(){
     inCheck = false;
     checkMate = false;
     staleMate = false;
+
 }
 
 ChessEngien::~ChessEngien(){
@@ -46,6 +47,15 @@ void ChessEngien::makeMove(Move newMove){
         bKingLocationC = newMove.endc;
     }
 
+    if(movingPiece & 0b00100000){
+        if(whiteToMove && newMove.endr == 0){
+            board[newMove.endr][newMove.endc] = 0b10000010;  
+        }
+        else if(!whiteToMove && newMove.endr == 7){
+            board[newMove.endr][newMove.endc] = 0b01000010;
+        }
+    }
+
     if(newMove.CastlingMove){
         if(newMove.endc < newMove.startc){
             board[newMove.endr][0] = 0b00000000;
@@ -70,7 +80,12 @@ void ChessEngien::makeMove(Move newMove){
         board[newMove.startr][newMove.endc] = 0b00000000;
     }
 
-    whiteToMove = !whiteToMove;
+    if(whiteToMove){
+        whiteToMove = false;
+    }
+    else{
+        whiteToMove = true;
+    }
     updateCastlingRights(newMove);
 
 }
@@ -93,6 +108,7 @@ void ChessEngien::undoMove(){
             bKingLocationR = move.startr;
             bKingLocationC = move.startc;
         }
+
 
         if(move.CastlingMove){
             if(move.endc < move.startc){
@@ -147,7 +163,12 @@ void ChessEngien::undoMove(){
         
         checkMate = false;
         staleMate = false;
-        whiteToMove = !whiteToMove;
+        if(whiteToMove){
+            whiteToMove = false;
+        }
+        else{
+            whiteToMove = true;
+        }
     }
     else{
         cout << "no move to undo" << endl;
@@ -742,10 +763,6 @@ void ChessEngien::checkForPinsAndChecks(){
         }
     }
 }
-
-
-
-
 
 
 

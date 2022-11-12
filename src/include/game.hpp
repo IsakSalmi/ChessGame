@@ -3,10 +3,9 @@
 #include <iostream>
 #include <vector>
 #include "Config.hpp"
-#include "ChessEngine.hpp"
 #include "move.hpp"
+#include "ChessEngine.hpp"
 #include "ChessAI.hpp"
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -32,7 +31,7 @@ private:
     int SQ_size;
 
     ChessEngien *chessEngien;
-    ChessAI *chessAI;
+    ChessAI *AI;
 
     void drawEverything(int sqr, int sqc, vector<Move> validMoves);
     void drawBoard();

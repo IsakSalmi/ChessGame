@@ -6,14 +6,21 @@
 #include<cstdlib>
 #include<time.h>
 #include "move.hpp"
+#include "Config.hpp"
 
 using namespace std;
 class Move;
 class ChessAI{
     private:
+        int checMate, staleMate;
+
+        Move nextMove;
+        int findMoveNegaMaxAlphaBeta(ChessEngien gs, vector<Move> validMoves, int depth, int alpha, int beta, int turnMultiplier);
+        int scoreBoard(ChessEngien gs);
 
     public:
         Move findRandomMove(vector<Move> validMove);
-        ChessAI(){}
+        Move findeBestMove(ChessEngien gs, vector<Move> validMoves);
+        ChessAI();
         ~ChessAI(){}
 };

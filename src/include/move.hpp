@@ -18,6 +18,7 @@ public:
     int pieceCapture;
     bool CastlingMove, EnPassantMove;
 
+    Move();
     Move(int sr, int sc, int er, int ec, ChessEngien gameState);
     Move(int sr, int sc, int er, int ec, ChessEngien gameState, bool isCastlingMove, bool isEnPassantMove);
     ~Move();

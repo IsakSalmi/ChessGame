@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include <vector>
+#include<cstdlib>
+#include<time.h>
+#include <math.h>
 #include "move.hpp"
 #include "Config.hpp"
-#include <math.h>
 
 using namespace std;
 class Move;
@@ -56,6 +58,9 @@ public:
     void undoMove();
     vector<Move> getValidMove();
     bool whiteToMove;
+
+    Move findRandomMove(vector<Move> validMove);
+    Move findeBestMove(vector<Move> validMoves);
 
     ChessEngien();
     ~ChessEngien();

@@ -1,6 +1,8 @@
 #include "../include/move.hpp"
 
 
+Move::Move(){
+}
 
 Move::Move(int sr, int sc, int er, int ec, ChessEngien gameState){
     startc = sc;

@@ -8,7 +8,7 @@ game::game(){
     SDL_SetRenderDrawBlendMode(rendere,SDL_BLENDMODE_BLEND);
     run = true;
     chessEngien = new ChessEngien;
-    chessAI = new ChessAI;
+    AI = new ChessAI;
     playerOne = PLAYER_ONE;
     playerTow = PLAYER_TWO;
 
@@ -134,8 +134,11 @@ void game::startGame(){
         }
 
         if(!gameOver && !humanTurn){
-            Move AIMove = chessAI->findRandomMove(validMoves);
-            cout << AIMove.endr << AIMove.endc << endl;
+            Move AIMove = AI->findeBestMove(*chessEngien, validMoves);
+            if(AIMove.startr == -1 && AIMove.startc == -1){
+                AIMove = AI->findRandomMove(validMoves);
+                cout << "test" << endl;
+            }
             chessEngien->makeMove(AIMove);
             moveMade = true;
         }
