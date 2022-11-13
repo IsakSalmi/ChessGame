@@ -67,8 +67,6 @@ void game::startGame(){
 
         if((chessEngien->whiteToMove and playerOne) or (!(chessEngien->whiteToMove) and playerTow)){humanTurn = true;}
         else{humanTurn = false;}
-
-        int startLoop = SDL_GetTicks();  //for fps
         while(SDL_PollEvent(&windowEvent)){
             switch(windowEvent.type){
                 case SDL_QUIT:
@@ -163,12 +161,6 @@ void game::startGame(){
         }
 
         drawEverything(selectedSQr,selectedSQc, validMoves);
-
-        //for fps
-        int delta = SDL_GetTicks() - startLoop;
-        if (delta < desiredDelta){
-            SDL_Delay(desiredDelta-delta);
-        }
     }
 }
 
