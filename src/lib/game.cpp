@@ -50,7 +50,6 @@ game::~game(){
 
 void game::startGame(){
     SDL_Init(SDL_INIT_EVERYTHING);
-
     bool firstClick = true;
     bool moveMade = false;
     bool gameOver = false;

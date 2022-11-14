@@ -6,6 +6,9 @@
 #include<cstdlib>
 #include<time.h>
 #include <algorithm>
+#include <thread>
+#include <future>
+#include <chrono>
 #include <random>
 #include "move.hpp"
 #include "Config.hpp"
@@ -14,6 +17,8 @@ using namespace std;
 class Move;
 class ChessAI{
     private:
+
+    public:
         int checMate, staleMate;
 
         int knightScore[8][8] = {{0,0,1,1,1,1,0,0},
@@ -83,8 +88,6 @@ class ChessAI{
         int findMoveNegaMaxAlphaBeta(ChessEngien gs, vector<Move> validMoves, int depth, int alpha, int beta, int turnMultiplier);
         int scoreBoard(ChessEngien gs);
         int findMoveMinMaxAlphaBeta(ChessEngien gs, vector<Move> validMoves, int depth ,bool whiteToMove, int alpha, int beta);
-
-    public:
         Move findRandomMove(vector<Move> validMove);
         Move findeBestMove(ChessEngien gs, vector<Move> validMoves);
         ChessAI();

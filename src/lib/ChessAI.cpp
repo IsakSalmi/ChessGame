@@ -6,6 +6,7 @@ ChessAI::ChessAI(){
 
 }
 
+
 Move ChessAI::findRandomMove(vector<Move> validMove){
     srand(time(0));
     int index = rand() % validMove.size();
@@ -151,3 +152,6 @@ int ChessAI::scoreBoard(ChessEngien gs){
     }
     return score;
 }
+
+
+

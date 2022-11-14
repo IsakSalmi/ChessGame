@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <future>
+#include <chrono>
 #include "Config.hpp"
 #include "move.hpp"
 #include "ChessEngine.hpp"
