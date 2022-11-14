@@ -210,8 +210,8 @@ void ChessEngien::allPossibleMove(){
         for(int c = 0; c < BOARD_DIMENTION; c++){
             //white pieces
             if(whiteToMove){
-                if(this->board[r][c] & 0b10000000){
-                    switch (this->board[r][c])
+                if(board[r][c] & 0b10000000){
+                    switch (board[r][c])
                         {
                         case 0b10100000:
                             getPawnMove(r,c,this->board[r][c]);
@@ -237,8 +237,8 @@ void ChessEngien::allPossibleMove(){
             }
             else{
             //black pieces
-                if((this->board[r][c] & 0b01000000)){
-                    switch (this->board[r][c])
+                if((board[r][c] & 0b01000000)){
+                    switch (board[r][c])
                         {
                         case 0b01100000:
                             getPawnMove(r,c,this->board[r][c]);
